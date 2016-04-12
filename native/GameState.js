@@ -44,7 +44,7 @@ export function joinGame(gameId) {
 
 export function withGameState(ComposedComponent) {
   return class WithGameState extends Component {
-    componentDidUpdate() {
+    componentDidMount() {
       _g.addListener('change', this._onChange);
     }
 
