@@ -7,14 +7,20 @@ import EventEmitter from 'eventemitter3';
 import Avalon from './Avalon';
 
 class GameState extends EventEmitter {
-  constructor(gameId) {
+  constructor() {
     super();
 
-    this.gameId = gameId;
-    this.gameRef = new Firebase(`https://beacongame.firebaseio.com/games/${gameId}`);
-    this.playerKey = null;
+    this.gameId = undefined;
+    this.gameRef = undefined;
+    this.playerKey = undefined;
     this.model = undefined;
     this.avalon = new Avalon(this);
+  }
+
+  init(gameId) {
+    this.gameId = gameId;
+    this.gameRef = new Firebase(`https://beacongame.firebaseio.com/games/${gameId}`);
+    this.emit('change');
 
     this.gameRef.on('value', (snapshot) => {
       this.model = snapshot.val();
@@ -73,15 +79,10 @@ class GameState extends EventEmitter {
   }
 }
 
-let _g;
-let _gResolve;
-let _gPromise = new Promise((resolve, reject) => {
-  _gResolve = resolve;
-});
+let _g = new GameState();
 
 export function joinGame(gameId) {
-  _g = new GameState(gameId);
-  _gResolve(_g);
+  _g.init(gameId);
   return _g.await();
 }
 
@@ -89,18 +90,12 @@ export function withGameState(ComposedComponent) {
   return class WithGameState extends Component {
     componentDidMount() {
       this._isMounted = true;
-      _gPromise.then((_g) => {
-        if (this._isMounted) {
-          _g.addListener('change', this._onChange);
-        }
-      });
+      _g.addListener('change', this._onChange);
     }
 
     componentWillUnmount() {
       this._isMounted = false;
-      if (_g) {
-        _g.removeListener('change', this._onChange);
-      }
+      _g.removeListener('change', this._onChange);
     }
 
     _onChange = () => {
@@ -110,7 +105,7 @@ export function withGameState(ComposedComponent) {
     };
 
     render() {
-      return <ComposedComponent {...this.props} gameState={_g} avalon={_g && _g.getAvalon()} />;
+      return <ComposedComponent {...this.props} gameState={_g} avalon={_g.getAvalon()} />;
     }
   }
 }

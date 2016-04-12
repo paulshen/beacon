@@ -19,7 +19,7 @@ class Beacon extends Component {
         return <MainScreen />;
       }
     }
-    if (gameState && gameState.getPlayers()) {
+    if (gameState.getPlayers() && gameState.getPlayerKey()) {
       return <WaitingRoomScreen />;
     }
     return <JoinScreen />;
