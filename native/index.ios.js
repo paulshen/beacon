@@ -7,30 +7,24 @@ import React, {
 } from 'react-native';
 
 import JoinScreen from './screens/JoinScreen';
-import HomeScreen from './screens/HomeScreen';
+import WaitingRoomScreen from './screens/WaitingRoomScreen';
+import { withGameState } from './GameState';
 
-const Screens = {
-  Join: 0,
-  Home: 1,
-}
-
-class beacon extends Component {
-  state = {
-    currentScreen: Screens.Join,
-  };
-
+class Beacon extends Component {
   render() {
-    switch (this.state.currentScreen) {
-      case Screens.Join:
-        return (
-          <JoinScreen onContinue={() => this.setState({currentScreen: Screens.Home})} />
-        );
-      case Screens.Home:
-        return (
-          <HomeScreen />
-        );
+    let { gameState, avalon } = this.props;
+    if (avalon) {
+      if (avalon.getRoles()) {
+        // return <MainScreen />;
+      }
     }
+    if (gameState && gameState.getPlayers()) {
+      return <WaitingRoomScreen />;
+    }
+    return <JoinScreen />;
   }
 }
 
-AppRegistry.registerComponent('beacon', () => beacon);
+Beacon = withGameState(Beacon);
+
+AppRegistry.registerComponent('beacon', () => Beacon);

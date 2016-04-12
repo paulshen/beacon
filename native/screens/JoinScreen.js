@@ -15,10 +15,8 @@ export default class JoinScreen extends React.Component {
   };
 
   _onPressJoin = () => {
-    let gameState = joinGame(this.state.gameId);
-    gameState.addPlayer(this.state.name).then(() => {
-      this.props.onContinue();
-    });
+    joinGame(this.state.gameId)
+    .then((gameState) => gameState.setPlayer(this.state.name));
   };
 
   render() {
