@@ -2,7 +2,7 @@ import React, {
   Component
 } from 'react-native';
 import Firebase from 'firebase';
-import EventEmitter from 'EventEmitter';
+import EventEmitter from 'eventemitter3';
 
 import Avalon from './Avalon';
 
@@ -88,19 +88,25 @@ export function joinGame(gameId) {
 export function withGameState(ComposedComponent) {
   return class WithGameState extends Component {
     componentDidMount() {
+      this._isMounted = true;
       _gPromise.then((_g) => {
-        _g.addListener('change', this._onChange);
+        if (this._isMounted) {
+          _g.addListener('change', this._onChange);
+        }
       });
     }
 
     componentWillUnmount() {
-      _gPromise.then((_g) => {
+      this._isMounted = false;
+      if (_g) {
         _g.removeListener('change', this._onChange);
-      });
+      }
     }
 
     _onChange = () => {
-      this.forceUpdate();
+      if (this._isMounted) {
+        this.forceUpdate();
+      }
     };
 
     render() {

@@ -10,6 +10,7 @@
     "react-native": "^0.23.1"
   },
   "devDependencies": {
+    "eventemitter3": "^1.2.0",
     "firebase": "^2.4.2"
   }
 }

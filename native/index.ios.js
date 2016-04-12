@@ -8,6 +8,7 @@ import React, {
 
 import JoinScreen from './screens/JoinScreen';
 import WaitingRoomScreen from './screens/WaitingRoomScreen';
+import MainScreen from './screens/MainScreen';
 import { withGameState } from './GameState';
 
 class Beacon extends Component {
@@ -15,7 +16,7 @@ class Beacon extends Component {
     let { gameState, avalon } = this.props;
     if (avalon) {
       if (avalon.getRoles()) {
-        // return <MainScreen />;
+        return <MainScreen />;
       }
     }
     if (gameState && gameState.getPlayers()) {
