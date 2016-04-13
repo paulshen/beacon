@@ -1,4 +1,4 @@
-const Role = {
+export const Role = {
   Follower: 'Follower',
   Minion: 'Minion',
 };
@@ -85,5 +85,9 @@ export default class Avalon {
   getInitialLeaderKey() {
     let model = this._getAvalonModel();
     return model && model.initialLeaderKey;
+  }
+
+  getRoleForPlayerKey(playerKey) {
+    return this.getRoles()[playerKey];
   }
 }
