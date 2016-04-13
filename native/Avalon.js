@@ -115,12 +115,12 @@ export default class Avalon {
       questIndex = questKeys.length - 1;
       let lastQuest = model.quests[questKeys[questIndex]];
 
-      if (Object.keys(lastQuest.actions).length !== this.gameState.getNumPlayers()) {
+      if (!lastQuest.actions || Object.keys(lastQuest.actions).length !== this.gameState.getNumPlayers()) {
         let nominationKeys = Object.keys(lastQuest.nominations);
         nominationKeys.sort();
         currentQuest = {
           nominations: nominationKeys.map((key) => lastQuest.nominations[key]),
-          actions: lastQuest.actions,
+          actions: lastQuest.actions || {},
         };
       } else {
         questIndex++;
@@ -142,12 +142,12 @@ export default class Avalon {
       nominationIndex = currentQuest.nominations.length - 1;
       let lastNomination = currentQuest.nominations[nominationIndex];
 
-      if (Object.keys(lastNomination.votes).length !== this.gameState.getNumPlayers() ||
+      if (!lastNomination.votes || Object.keys(lastNomination.votes).length !== this.gameState.getNumPlayers() ||
           this._isNominationPass(lastNomination)) {
         let nomineeKeys = Object.keys(lastNomination.nominees);
         currentNomination = {
           nominees: nomineeKeys.map((key) => lastNomination.nominees[key]),
-          votes: lastNomination.votes,
+          votes: lastNomination.votes || {},
         };
       } else {
         nominationIndex++;
@@ -234,6 +234,16 @@ export default class Avalon {
       };
     } else {
       throw new Error('unexpected stage');
+    }
+  }
+
+  nominate(playerKeys) {
+    let avalonState = this.getState();
+    let { leaderKey, questIndex, nominationIndex } = avalonState;
+    if (this.gameState.getPlayerKey() === leaderKey) {
+      this.gameState.setAvalonState(`quests/${questIndex}/nominations/${nominationIndex}/nominees`, playerKeys);
+    } else {
+      throw new Error('trying to nominate when not leader');
     }
   }
 }
