@@ -6,6 +6,7 @@ import React, {
 } from 'react-native';
 
 import { withGameState } from '../GameState';
+import ActionPanel from './ActionPanel';
 
 class MainScreen extends React.Component {
   _renderGameState(avalonState) {
@@ -45,6 +46,7 @@ class MainScreen extends React.Component {
       <View style={styles.container}>
         {this._renderGameState(avalonState)}
         {this._renderQuestInfo(avalonState)}
+        <ActionPanel gameState={this.props.gameState} avalon={this.props.avalon} />
       </View>
     );
   }
