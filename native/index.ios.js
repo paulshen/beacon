@@ -14,13 +14,13 @@ import { withGameState } from './GameState';
 class Beacon extends Component {
   render() {
     let { gameState, avalon } = this.props;
+    if (!gameState.getPlayers() || !gameState.getPlayerKey()) {
+      return <JoinScreen />;
+    }
     if (avalon.getRoles() && avalon.getInitialLeaderKey()) {
       return <MainScreen />;
     }
-    if (gameState.getPlayers() && gameState.getPlayerKey()) {
-      return <WaitingRoomScreen />;
-    }
-    return <JoinScreen />;
+    return <WaitingRoomScreen />;
   }
 }
 

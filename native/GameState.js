@@ -70,6 +70,13 @@ class GameState extends EventEmitter {
     return this.playerKey;
   }
 
+  getPlayerName() {
+    if (!this.model || !this.model.players || !this.playerKey) {
+      throw new Error('Called getPlayerName without data set', this);
+    }
+    return this.model.players[this.playerKey];
+  }
+
   getAvalon() {
     return this.avalon;
   }
