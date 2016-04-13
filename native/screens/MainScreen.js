@@ -8,12 +8,43 @@ import React, {
 import { withGameState } from '../GameState';
 
 class MainScreen extends React.Component {
+  _renderGameState(avalonState) {
+    return (
+      <View style={styles.gameStateContainer}>
+        {this.props.avalon.getQuestSizes().map((questSize, questIndex) => {
+          return (
+            <Text key={questIndex} style={styles.label}>
+              {questSize}
+            </Text>
+          );
+        })}
+      </View>
+    );
+  }
+
+  _renderQuestInfo(avalonState) {
+    return (
+      <View style={styles.questInfoContainer}>
+        <Text style={styles.label}>
+          Current Quest
+        </Text>
+        <Text style={styles.label}>
+          Leader: {this.props.gameState.getNameForPlayerKey(avalonState.leaderKey)}
+        </Text>
+        <Text style={styles.label}>
+          Vote: {avalonState.nominationIndex + 1} of 5
+        </Text>
+      </View>
+    );
+  }
+
   render() {
+    let avalonState = this.props.avalon.getState();
+
     return (
       <View style={styles.container}>
-        <Text style={styles.label}>
-          {JSON.stringify(this.props.avalon.getRoles())}
-        </Text>
+        {this._renderGameState(avalonState)}
+        {this._renderQuestInfo(avalonState)}
       </View>
     );
   }
@@ -25,6 +56,15 @@ export default MainScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  gameStateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  questInfoContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },

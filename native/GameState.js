@@ -62,6 +62,15 @@ class GameState extends EventEmitter {
     return this.model && this.model.players;
   }
 
+  getNumPlayers() {
+    let players = this.getPlayers();
+    if (!players) {
+      return 0;
+    }
+
+    return Object.keys(players).length;
+  }
+
   getGameId() {
     return this.gameId;
   }
