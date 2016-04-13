@@ -46,7 +46,7 @@ class MainScreen extends React.Component {
       <View style={styles.container}>
         {this._renderGameState(avalonState)}
         {this._renderQuestInfo(avalonState)}
-        <ActionPanel gameState={this.props.gameState} avalon={this.props.avalon} />
+        <ActionPanel gameState={this.props.gameState} avalon={this.props.avalon} avalonState={avalonState} />
       </View>
     );
   }

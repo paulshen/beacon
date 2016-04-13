@@ -33,7 +33,11 @@ export default class NominatePane extends React.Component {
 
   _onNominate = () => {
     if (this._didSelectCorrectNumber()) {
-      this.props.avalon.nominate(this.state.nomineeKeys);
+      this.props.avalon.nominate(
+        this.props.avalonState.questIndex,
+        this.props.avalonState.nominationIndex,
+        this.state.nomineeKeys
+      );
     } else {
       console.log('trying to nominate with incorrect number');
     }

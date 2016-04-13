@@ -204,30 +204,32 @@ export default class Avalon {
 
   getState() {
     let currentQuest = this._getCurrentQuest();
+    let questIndex = currentQuest.index;
     let currentNomination = this._getCurrentNomination();
-    if (currentNomination.nominees.length < this.getQuestSizes()[currentQuest.index]) {
+    let nominationIndex = currentNomination.index;
+    if (currentNomination.nominees.length < this.getQuestSizes()[questIndex]) {
       return {
         stage: Stage.Nominating,
-        leaderKey: this._getLeaderKey(),
-        questIndex: currentQuest.index,
-        nominationIndex: currentNomination.index,
+        leaderKey: this._getLeaderKey(questIndex, nominationIndex),
+        questIndex: questIndex,
+        nominationIndex: nominationIndex,
         nominees: currentNomination.nominees,
       };
     } else if (Object.keys(currentNomination.votes).length < this.gameState.getNumPlayers()) {
       return {
         stage: Stage.Voting,
-        leaderKey: this._getLeaderKey(),
-        questIndex: currentQuest.index,
-        nominationIndex: currentNomination.index,
+        leaderKey: this._getLeaderKey(questIndex, nominationIndex),
+        questIndex: questIndex,
+        nominationIndex: nominationIndex,
         nominees: currentNomination.nominees,
         votes: currentNomination.votes,
       };
     } else if (this._isNominationPass(currentNomination)) {
       return {
         stage: Stage.Questing,
-        leaderKey: this._getLeaderKey(),
-        questIndex: currentQuest.index,
-        nominationIndex: currentNomination.index,
+        leaderKey: this._getLeaderKey(questIndex, nominationIndex),
+        questIndex: questIndex,
+        nominationIndex: nominationIndex,
         nominees: currentNomination.nominees,
         votes: currentNomination.votes,
         actions: currentQuest.actions,
@@ -237,13 +239,26 @@ export default class Avalon {
     }
   }
 
-  nominate(playerKeys) {
+  nominate(questIndex, nominationIndex, nomineeKeys) {
     let avalonState = this.getState();
-    let { leaderKey, questIndex, nominationIndex } = avalonState;
-    if (this.gameState.getPlayerKey() === leaderKey) {
-      this.gameState.setAvalonState(`quests/${questIndex}/nominations/${nominationIndex}/nominees`, playerKeys);
+    let { leaderKey, questIndex: currentQuestIndex, nominationIndex: currentNominationIndex } = avalonState;
+    if (this.gameState.getPlayerKey() === leaderKey &&
+        questIndex === currentQuestIndex &&
+        nominationIndex === currentNominationIndex) {
+      this.gameState.setAvalonState(`quests/${questIndex}/nominations/${nominationIndex}/nominees`, nomineeKeys);
     } else {
-      throw new Error('trying to nominate when not leader');
+      throw new Error('invalid inputs for nominate');
+    }
+  }
+
+  vote(questIndex, nominationIndex, approve) {
+    let avalonState = this.getState();
+    let { questIndex: currentQuestIndex, nominationIndex: currentNominationIndex } = avalonState;
+    if (questIndex === currentQuestIndex &&
+        nominationIndex === currentNominationIndex) {
+      this.gameState.setAvalonState(`quests/${questIndex}/nominations/${nominationIndex}/votes/${this.gameState.getPlayerKey()}`, approve);
+    } else {
+      throw new Error('invalid inputs for vote');
     }
   }
 }
