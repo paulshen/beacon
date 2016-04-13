@@ -1,6 +1,6 @@
 const Role = {
-  Follower: '0',
-  Minion: '1',
+  Follower: 'Follower',
+  Minion: 'Minion',
 };
 
 const PlayerCountToRoles = {
@@ -46,6 +46,11 @@ export default class Avalon {
   }
 
   start() {
+    this._assignRoles();
+    this._assignFirstLeader();
+  }
+
+  _assignRoles() {
     let playerKeys = Object.keys(this.gameState.model.players);
     shuffle(playerKeys);
     let roleCounts = PlayerCountToRoles[playerKeys.length];
@@ -61,6 +66,13 @@ export default class Avalon {
     this.gameState.setAvalonState('roles', roles);
   }
 
+  _assignFirstLeader() {
+    let playerKeys = Object.keys(this.gameState.model.players);
+    let initialLeaderKey = playerKeys[Math.floor(Math.random() * playerKeys.length)];
+
+    this.gameState.setAvalonState('initialLeaderKey', initialLeaderKey);
+  }
+
   _getAvalonModel() {
     return this.gameState.model && this.gameState.model.avalon;
   }
@@ -68,5 +80,10 @@ export default class Avalon {
   getRoles() {
     let model = this._getAvalonModel();
     return model && model.roles;
+  }
+
+  getInitialLeaderKey() {
+    let model = this._getAvalonModel();
+    return model && model.initialLeaderKey;
   }
 }

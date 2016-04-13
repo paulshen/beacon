@@ -14,10 +14,8 @@ import { withGameState } from './GameState';
 class Beacon extends Component {
   render() {
     let { gameState, avalon } = this.props;
-    if (avalon) {
-      if (avalon.getRoles()) {
-        return <MainScreen />;
-      }
+    if (avalon.getRoles() && avalon.getInitialLeaderKey()) {
+      return <MainScreen />;
     }
     if (gameState.getPlayers() && gameState.getPlayerKey()) {
       return <WaitingRoomScreen />;
