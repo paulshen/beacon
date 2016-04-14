@@ -6,6 +6,7 @@ import React, {
   View
 } from 'react-native';
 
+import { Button } from '../ui/Elements';
 import { joinGame } from '../GameState';
 
 export default class JoinScreen extends React.Component {
@@ -40,13 +41,7 @@ export default class JoinScreen extends React.Component {
           value={this.state.name}
           autoCorrect={false}
         />
-        <TouchableOpacity
-          style={styles.button}
-          onPress={this._onPressJoin}>
-          <Text>
-            Join
-          </Text>
-        </TouchableOpacity>
+        <Button onPress={this._onPressJoin}>Join</Button>
       </View>
     );
   }
@@ -68,7 +63,5 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     margin: 10,
-  },
-  button: {
   },
 });

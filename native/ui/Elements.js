@@ -12,7 +12,7 @@ export const Button = (props) => (
     <Text>{props.children}</Text>
   </TouchableOpacity>
 );
-const ButtonStyles = {
+const ButtonStyles = StyleSheet.create({
   Root: {
     borderColor: '#202020',
     borderWidth: 2,
@@ -22,4 +22,21 @@ const ButtonStyles = {
   Disabled: {
     borderColor: '#cccccc',
   },
+});
+
+export const UIText = {
+  Body: (props) => <Text {...props} style={[UITextStyles.Body, props.style]} />,
+  Title: (props) => <Text {...props} style={[UITextStyles.Title, props.style]} />,
 };
+
+const UITextStyles = StyleSheet.create({
+  Body: {
+    fontFamily: 'AvenirNext-Regular',
+    fontSize: 18,
+  },
+  Title: {
+    fontFamily: 'AvenirNext-Bold',
+    fontSize: 14,
+    letterSpacing: 1,
+  },
+});
