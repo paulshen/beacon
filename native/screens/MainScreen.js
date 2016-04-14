@@ -7,6 +7,7 @@ import React, {
 
 import { withGameState } from '../GameState';
 import { Stage } from '../Avalon';
+import GameStateView from './views/GameStateView';
 import ActionPanel from './views/ActionPanel';
 import RoleScreen from './RoleScreen';
 import QuestResultScreen from './QuestResultScreen';
@@ -65,20 +66,6 @@ class MainScreen extends React.Component {
     }
   }
 
-  _renderGameState(avalonState) {
-    return (
-      <View style={styles.gameStateContainer}>
-        {this.props.avalon.getQuestSizes().map((questSize, questIndex) => {
-          return (
-            <Text key={questIndex} style={styles.label}>
-              {questSize}
-            </Text>
-          );
-        })}
-      </View>
-    );
-  }
-
   _renderQuestInfo(avalonState) {
     return (
       <View style={styles.questInfoContainer}>
@@ -124,7 +111,12 @@ class MainScreen extends React.Component {
 
     return (
       <View style={styles.container}>
-        {this._renderGameState(avalonState)}
+        <GameStateView
+          gameState={this.props.gameState}
+          avalon={this.props.avalon}
+          avalonState={avalonState}
+          showQuestResultModal={(questIndex) => this.setState({modalIdToShow: _getIdForModal(Modals.QuestResult, questIndex)})}
+        />
         {this._renderQuestInfo(avalonState)}
         <ActionPanel gameState={this.props.gameState} avalon={this.props.avalon} avalonState={avalonState} />
         <TouchableOpacity
