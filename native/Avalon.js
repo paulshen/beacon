@@ -100,6 +100,14 @@ export default class Avalon {
     return this.gameState.model.avalon;
   }
 
+  _isQuestFinished(quest, questIndex) {
+    return quest.actions && Object.keys(quest.actions).length === this.getQuestSizes()[questIndex];
+  }
+
+  _isNominationFinished(nomination) {
+    return nomination.votes && Object.keys(nomination.votes).length === this.gameState.getNumPlayers();
+  }
+
   _isNominationPass(nomination) {
     let yesVotes = Object.keys(nomination.votes).filter((key) => nomination.votes[key]);
     return yesVotes.length > this.gameState.getNumPlayers() / 2;
@@ -115,15 +123,15 @@ export default class Avalon {
       questIndex = questKeys.length - 1;
       let lastQuest = model.quests[questKeys[questIndex]];
 
-      if (!lastQuest.actions || Object.keys(lastQuest.actions).length !== this.gameState.getNumPlayers()) {
+      if (this._isQuestFinished(lastQuest, questIndex)) {
+        questIndex++;
+      } else {
         let nominationKeys = Object.keys(lastQuest.nominations);
         nominationKeys.sort();
         currentQuest = {
           nominations: nominationKeys.map((key) => lastQuest.nominations[key]),
           actions: lastQuest.actions || {},
         };
-      } else {
-        questIndex++;
       }
     }
 
@@ -142,15 +150,14 @@ export default class Avalon {
       nominationIndex = currentQuest.nominations.length - 1;
       let lastNomination = currentQuest.nominations[nominationIndex];
 
-      if (!lastNomination.votes || Object.keys(lastNomination.votes).length !== this.gameState.getNumPlayers() ||
-          this._isNominationPass(lastNomination)) {
+      if (this._isNominationFinished(lastNomination) && !this._isNominationPass(lastNomination)) {
+        nominationIndex++;
+      } else {
         let nomineeKeys = Object.keys(lastNomination.nominees);
         currentNomination = {
           nominees: nomineeKeys.map((key) => lastNomination.nominees[key]),
           votes: lastNomination.votes || {},
         };
-      } else {
-        nominationIndex++;
       }
     }
 
@@ -166,8 +173,10 @@ export default class Avalon {
 
     let model = this._getAvalonModel();
     if (model.quests) {
+      let questKeys = Object.keys(model.quests);
+      questKeys.sort();
       for (let i = 0; i < questIndex; i++) {
-        let quest = model.quests[key];
+        let quest = model.quests[questKeys[i]];
         if (quest.nominations) {
           numNominations += Object.keys(quest.nominations).length;
         }
@@ -259,6 +268,16 @@ export default class Avalon {
       this.gameState.setAvalonState(`quests/${questIndex}/nominations/${nominationIndex}/votes/${this.gameState.getPlayerKey()}`, approve);
     } else {
       throw new Error('invalid inputs for vote');
+    }
+  }
+
+  questAction(questIndex, success) {
+    let avalonState = this.getState();
+    let { questIndex: currentQuestIndex } = avalonState;
+    if (questIndex === currentQuestIndex) {
+      this.gameState.setAvalonState(`quests/${questIndex}/actions/${this.gameState.getPlayerKey()}`, success);
+    } else {
+      throw new Error('invalid inputs for questAction');
     }
   }
 }
