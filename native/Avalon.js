@@ -113,10 +113,9 @@ export default class Avalon {
     return yesVotes.length > this.gameState.getNumPlayers() / 2;
   }
 
-  _getCurrentQuest() {
+  _getCurrentQuestIndex() {
     let model = this._getAvalonModel();
     let questIndex = 0;
-    let currentQuest;
     if (model.quests) {
       let questKeys = Object.keys(model.quests);
       questKeys.sort();
@@ -125,47 +124,74 @@ export default class Avalon {
 
       if (this._isQuestFinished(lastQuest, questIndex)) {
         questIndex++;
-      } else {
-        let nominationKeys = Object.keys(lastQuest.nominations);
-        nominationKeys.sort();
-        currentQuest = {
-          nominations: nominationKeys.map((key) => lastQuest.nominations[key]),
-          actions: lastQuest.actions || {},
-        };
       }
+    }
+
+    return questIndex;
+  }
+
+  _getQuestByIndex(questIndex) {
+    let model = this._getAvalonModel();
+    let ret;
+    if (model.quests && Object.keys(model.quests).length > questIndex) {
+      let questKeys = Object.keys(model.quests);
+      questKeys.sort();
+      let quest = model.quests[questKeys[questIndex]];
+      let nominationKeys = Object.keys(quest.nominations);
+      nominationKeys.sort();
+      ret = {
+        nominations: nominationKeys.map((key) => quest.nominations[key]),
+        actions: quest.actions || {},
+      };
     }
 
     return Object.assign({
       index: questIndex,
       nominations: [],
       actions: {},
-    }, currentQuest);
+    }, ret);
   }
 
-  _getCurrentNomination() {
+  _getCurrentQuest() {
+    return this._getQuestByIndex(this._getCurrentQuestIndex());
+  }
+
+  _getCurrentNominationIndex() {
     let currentQuest = this._getCurrentQuest();
     let nominationIndex = 0;
-    let currentNomination;
     if (currentQuest.nominations.length > 0) {
       nominationIndex = currentQuest.nominations.length - 1;
       let lastNomination = currentQuest.nominations[nominationIndex];
 
       if (this._isNominationFinished(lastNomination) && !this._isNominationPass(lastNomination)) {
         nominationIndex++;
-      } else {
-        let nomineeKeys = Object.keys(lastNomination.nominees);
-        currentNomination = {
-          nominees: nomineeKeys.map((key) => lastNomination.nominees[key]),
-          votes: lastNomination.votes || {},
-        };
       }
+    }
+
+    return nominationIndex;
+  }
+
+  _getNominationByIndex(questIndex, nominationIndex) {
+    let quest = this._getQuestByIndex(questIndex);
+    let ret;
+    if (quest.nominations.length > nominationIndex) {
+      let nomination = quest.nominations[nominationIndex];
+      let nomineeKeys = Object.keys(nomination.nominees);
+      ret = {
+        nominees: nomineeKeys.map((key) => nomination.nominees[key]),
+        votes: nomination.votes || {},
+      };
     }
 
     return Object.assign({
       index: nominationIndex,
       nominees: [],
       votes: {},
-    }, currentNomination);
+    }, ret);
+  }
+
+  _getCurrentNomination() {
+    return this._getNominationByIndex(this._getCurrentQuestIndex(), this._getCurrentNominationIndex());
   }
 
   _getLeaderKey(questIndex, nominationIndex) {
