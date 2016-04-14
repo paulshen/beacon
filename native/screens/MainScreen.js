@@ -9,6 +9,7 @@ import { withGameState } from '../GameState';
 import { Stage } from '../Avalon';
 import ActionPanel from './views/ActionPanel';
 import VotingResultScreen from './VotingResultScreen';
+import QuestResultScreen from './QuestResultScreen';
 
 const Modals = {
   VotingResult: '1',
@@ -112,20 +113,17 @@ class MainScreen extends React.Component {
             {...this.props}
             questIndex={questIndex}
             nominationIndex={nominationIndex}
-            avalonState={avalonState}
             onDismiss={() => this.setState({modalIdToShow: null})}
           />
         );
       case Modals.QuestResult:
-        // return (
-        //   <QuestResultScreen
-        //     {...this.props}
-        //     questIndex={questIndex}
-        //     nominationIndex={nominationIndex}
-        //     avalonState={avalonState}
-        //     onDismiss={() => this.setState({modalIdToShow: null})}
-        //   />
-        // );
+        return (
+          <QuestResultScreen
+            {...this.props}
+            questIndex={questIndex}
+            onDismiss={() => this.setState({modalIdToShow: null})}
+          />
+        );
       }
     }
 
