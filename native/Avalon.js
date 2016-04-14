@@ -311,7 +311,7 @@ export default class Avalon {
   getQuestOutcome(questIndex) {
     let quest = this._getQuestByIndex(questIndex);
 
-    if (Object.keys(quest.actions).length === 0) {
+    if (Object.keys(quest.actions).length < this.getQuestSizes()[questIndex]) {
       return null;
     }
 
