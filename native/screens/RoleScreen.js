@@ -8,42 +8,66 @@ import React, {
 import { Role } from '../Avalon.js';
 import { Button } from '../ui/Elements.js';
 
-const FellowMinionDisplay = ({ gameState, avalon }) => {
-  let roles = avalon.getRoles();
-  let minionList = Object.keys(roles).map((playerKey) => {
-    switch (roles[playerKey]) {
+class RoleKnowledgeDisplay extends React.Component {
+  _getKnownRolesDescription(role) {
+    switch (role) {
+    case Role.Merlin:
+      return 'The Minions (except Mordred):';
+    case Role.Percival:
+      return 'Merlin and Morgana (in no particular order):';
     case Role.Minion:
-      return (
-        <View key={playerKey}><Text>{gameState.getNameForPlayerKey(playerKey)}</Text></View>
-      );
+    case Role.Assassin:
+    case Role.Morgana:
+    case Role.Mordred:
+      return 'Your Fellow Minions (except Mordred):';
     default:
       return null;
     }
-  });
-  return (
-    <View>
-      {minionList}
-    </View>
-  );
+  }
+
+  render() {
+    let { gameState, avalon } = this.props;
+    let roles = avalon.getRoles();
+    let playerRole = avalon.getRoleForPlayerKey(gameState.getPlayerKey());
+    let knownRolesDescription = this._getKnownRolesDescription(playerRole);
+    if (!knownRolesDescription) {
+      return null;
+    }
+
+    let knownRoles = avalon.getKnownRolesForPlayerKey(gameState.getPlayerKey());
+    let knownPlayersList = Object.keys(roles).map((playerKey) => {
+      if (knownRoles.indexOf(roles[playerKey]) !== -1) {
+        return (
+          <View key={playerKey}><Text>{gameState.getNameForPlayerKey(playerKey)}</Text></View>
+        );
+      } else {
+        return null;
+      }
+    });
+    return (
+      <View>
+        <Text>
+          {knownRolesDescription}
+        </Text>
+        {knownPlayersList}
+      </View>
+    );
+  }
 };
 
 export default class RoleScreen extends React.Component {
   render() {
     let { gameState, avalon } = this.props;
     let playerRole = avalon.getRoleForPlayerKey(gameState.getPlayerKey());
-    let additionalDisplay = null;
-    if (playerRole === Role.Minion) {
-      additionalDisplay = <FellowMinionDisplay gameState={gameState} avalon={avalon} />;
-    }
     return (
       <View style={styles.container}>
         <Text style={styles.label}>
           {gameState.getPlayerName()}
         </Text>
         <Text style={styles.label}>
-          {playerRole}
+          You are {playerRole}
         </Text>
-        {additionalDisplay}
+        <RoleKnowledgeDisplay gameState={gameState} avalon={avalon} />
         <Button onPress={() => this.props.onDismiss()}>Okay</Button>
       </View>
     );

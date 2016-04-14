@@ -4,35 +4,91 @@ export const Stage = {
   Questing: 3,
 };
 
+export const Team = {
+  Good: 'Good',
+  Bad: 'Bad',
+};
+
 export const Role = {
   Follower: 'Follower',
+  Merlin: 'Merlin',
+  Percival: 'Percival',
   Minion: 'Minion',
+  Assassin: 'Assassin',
+  Morgana: 'Morgana',
+  Mordred: 'Mordred',
+  Oberon: 'Oberon',
+};
+
+const RoleToTeam = {
+  [Role.Follower]: Team.Good,
+  [Role.Merlin]: Team.Good,
+  [Role.Percival]: Team.Good,
+  [Role.Minion]: Team.Bad,
+  [Role.Assassin]: Team.Bad,
+  [Role.Morgana]: Team.Bad,
+  [Role.Mordred]: Team.Bad,
+  [Role.Oberon]: Team.Bad,
+};
+
+const RoleToKnownRoles = {
+  [Role.Follower]: [],
+  [Role.Merlin]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Oberon],
+  [Role.Percival]: [Role.Merlin, Role.Morgana],
+  [Role.Minion]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred],
+  [Role.Assassin]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred],
+  [Role.Morgana]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred],
+  [Role.Mordred]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred],
+  [Role.Oberon]: [],
 };
 
 const PlayerCountToRoles = {
   5: {
-    [Role.Follower]: 3,
-    [Role.Minion]: 2,
+    [Role.Follower]: 1,
+    [Role.Merlin]: 1,
+    [Role.Percival]: 1,
+    [Role.Assassin]: 1,
+    [Role.Morgana]: 1,
   },
   6: {
-    [Role.Follower]: 4,
-    [Role.Minion]: 2,
+    [Role.Follower]: 2,
+    [Role.Merlin]: 1,
+    [Role.Percival]: 1,
+    [Role.Assassin]: 1,
+    [Role.Morgana]: 1,
   },
   7: {
-    [Role.Follower]: 4,
-    [Role.Minion]: 3,
+    [Role.Follower]: 2,
+    [Role.Merlin]: 1,
+    [Role.Percival]: 1,
+    [Role.Minion]: 1,
+    [Role.Assassin]: 1,
+    [Role.Morgana]: 1,
   },
   8: {
-    [Role.Follower]: 5,
-    [Role.Minion]: 3,
+    [Role.Follower]: 3,
+    [Role.Merlin]: 1,
+    [Role.Percival]: 1,
+    [Role.Assassin]: 1,
+    [Role.Morgana]: 1,
+    [Role.Mordred]: 1,
   },
   9: {
-    [Role.Follower]: 6,
-    [Role.Minion]: 3,
+    [Role.Follower]: 4,
+    [Role.Merlin]: 1,
+    [Role.Percival]: 1,
+    [Role.Assassin]: 1,
+    [Role.Morgana]: 1,
+    [Role.Mordred]: 1,
   },
   10: {
-    [Role.Follower]: 6,
-    [Role.Minion]: 4,
+    [Role.Follower]: 4,
+    [Role.Merlin]: 1,
+    [Role.Percival]: 1,
+    [Role.Assassin]: 1,
+    [Role.Morgana]: 1,
+    [Role.Mordred]: 1,
+    [Role.Oberon]: 1,
   },
 };
 
@@ -231,6 +287,10 @@ export default class Avalon {
 
   getRoleForPlayerKey(playerKey) {
     return this.getRoles()[playerKey];
+  }
+
+  getKnownRolesForPlayerKey(playerKey) {
+    return RoleToKnownRoles[this.getRoleForPlayerKey(playerKey)];
   }
 
   getQuestSizes() {
