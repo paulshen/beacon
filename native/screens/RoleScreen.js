@@ -5,7 +5,6 @@ import React, {
   View
 } from 'react-native';
 
-import { withGameState } from '../GameState';
 import { Role } from '../Avalon.js';
 import { Button } from '../ui/Elements.js';
 
@@ -28,7 +27,7 @@ const FellowMinionDisplay = ({ gameState, avalon }) => {
   );
 };
 
-class RoleScreen extends React.Component {
+export default class RoleScreen extends React.Component {
   render() {
     let { gameState, avalon } = this.props;
     let playerRole = avalon.getRoleForPlayerKey(gameState.getPlayerKey());
@@ -45,14 +44,11 @@ class RoleScreen extends React.Component {
           {playerRole}
         </Text>
         {additionalDisplay}
-        <Button onPress={() => this.props.onDismiss()}>Okay</Button> 
+        <Button onPress={() => this.props.onDismiss()}>Okay</Button>
       </View>
     );
   }
 }
-
-RoleScreen = withGameState(RoleScreen);
-export default RoleScreen;
 
 const styles = StyleSheet.create({
   container: {

@@ -8,12 +8,14 @@ import React, {
 import { withGameState } from '../GameState';
 import { Stage } from '../Avalon';
 import ActionPanel from './views/ActionPanel';
-import VotingResultScreen from './VotingResultScreen';
+import RoleScreen from './RoleScreen';
 import QuestResultScreen from './QuestResultScreen';
+import VotingResultScreen from './VotingResultScreen';
 
 const Modals = {
   VotingResult: '1',
   QuestResult: '2',
+  Role: '3',
 };
 function _getIdForModal(modalType, questIndex, nominationIndex) {
   return `${modalType}/${questIndex}/${nominationIndex}`;
@@ -40,35 +42,26 @@ class MainScreen extends React.Component {
   _showModalIfNeeded() {
     let avalonState = this.props.avalon.getState();
     let { stage, questIndex, nominationIndex } = avalonState;
+    let modalId;
     switch (stage) {
     case Stage.Questing:
-      let modalId = _getIdForModal(Modals.VotingResult, questIndex, nominationIndex);
-      if (this.state.modalsSeen.indexOf(modalId) === -1) {
-        this.setState({
-          modalsSeen: [...this.state.modalsSeen, modalId],
-          modalIdToShow: modalId,
-        });
-      }
+      modalId = _getIdForModal(Modals.VotingResult, questIndex, nominationIndex);
       break;
     case Stage.Nominating:
       if (nominationIndex > 0) {
-        let modalId = _getIdForModal(Modals.VotingResult, questIndex, nominationIndex - 1);
-        if (this.state.modalsSeen.indexOf(modalId) === -1) {
-          this.setState({
-            modalsSeen: [...this.state.modalsSeen, modalId],
-            modalIdToShow: modalId,
-          });
-        }
+        modalId = _getIdForModal(Modals.VotingResult, questIndex, nominationIndex - 1);
       } else if (questIndex > 0) {
-        let modalId = _getIdForModal(Modals.QuestResult, questIndex - 1, null);
-        if (this.state.modalsSeen.indexOf(modalId) === -1) {
-          this.setState({
-            modalsSeen: [...this.state.modalsSeen, modalId],
-            modalIdToShow: modalId,
-          });
-        }
+        modalId = _getIdForModal(Modals.QuestResult, questIndex - 1, null);
+      } else {
+        modalId = _getIdForModal(Modals.Role, null, null);
       }
       break;
+    }
+    if (this.state.modalsSeen.indexOf(modalId) === -1) {
+      this.setState({
+        modalsSeen: [...this.state.modalsSeen, modalId],
+        modalIdToShow: modalId,
+      });
     }
   }
 
@@ -124,6 +117,8 @@ class MainScreen extends React.Component {
             onDismiss={() => this.setState({modalIdToShow: null})}
           />
         );
+      case Modals.Role:
+        return <RoleScreen {...this.props} onDismiss={() => this.setState({modalIdToShow: null})} />;
       }
     }
 
@@ -132,6 +127,11 @@ class MainScreen extends React.Component {
         {this._renderGameState(avalonState)}
         {this._renderQuestInfo(avalonState)}
         <ActionPanel gameState={this.props.gameState} avalon={this.props.avalon} avalonState={avalonState} />
+        <TouchableOpacity
+          onPress={() => this.setState({modalIdToShow: _getIdForModal(Modals.Role)})}
+          style={styles.roleButton}>
+          <Text>Role</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -158,5 +158,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
+  },
+  roleButton: {
+    left: 20,
+    position: 'absolute',
+    top: 30,
   },
 });
