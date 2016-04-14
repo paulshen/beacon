@@ -7,7 +7,7 @@ import React, {
 
 import { withGameState } from '../GameState';
 import { Stage } from '../Avalon';
-import ActionPanel from './ActionPanel';
+import ActionPanel from './views/ActionPanel';
 import VotingResultScreen from './VotingResultScreen';
 
 const Modals = {

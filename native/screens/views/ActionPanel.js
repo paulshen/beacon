@@ -1,9 +1,9 @@
 import React from 'react-native';
 
-import { Stage } from '../Avalon';
-import NominatePane from './action_panes/NominatePane';
-import VotePane from './action_panes/VotePane';
-import QuestPane from './action_panes/QuestPane';
+import { Stage } from '../../Avalon';
+import NominatePane from './NominatePane';
+import VotePane from './VotePane';
+import QuestPane from './QuestPane';
 
 export default class ActionPanel extends React.Component {
   render() {
