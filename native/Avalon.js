@@ -111,6 +111,16 @@ function shuffle(a) {
   }
 }
 
+function _getHighestValueOfFirebaseArray(map) {
+  let maxValue = null;
+  Object.keys(map).forEach(k => {
+    if (!maxValue || map[k] > maxValue) {
+      maxValue = map[k];
+    }
+  });
+  return maxValue;
+}
+
 export default class Avalon {
   constructor(gameState) {
     this.gameState = gameState;
@@ -119,6 +129,7 @@ export default class Avalon {
   start() {
     this._assignRoles();
     this._assignFirstLeader();
+    this.gameState.setAvalonState('startTime', Firebase.ServerValue.TIMESTAMP);
   }
 
   _assignRoles() {
@@ -313,6 +324,23 @@ export default class Avalon {
     }
   }
 
+  _getNominationStageStartTime() {
+    let currentQuest = this._getCurrentQuest();
+    let questIndex = currentQuest.index;
+    let currentNomination = this._getCurrentNomination();
+    let nominationIndex = currentNomination.index;
+    let model = this._getAvalonModel();
+    if (nominationIndex > 0) {
+      let lastNomination = model.quests[`${currentQuest.index}`].nominations[`${nominationIndex-1}`];
+      return _getHighestValueOfFirebaseArray(lastNomination.voteTimes);
+    } else if (questIndex > 0) {
+      let previousQuest = model.quests[`${currentQuest.index-1}`];
+      return _getHighestValueOfFirebaseArray(previousQuest.actionTimes);
+    } else {
+      return model.startTime;
+    }
+  }
+
   getState() {
     let currentQuest = this._getCurrentQuest();
     let questIndex = currentQuest.index;
@@ -325,6 +353,7 @@ export default class Avalon {
         questIndex: questIndex,
         nominationIndex: nominationIndex,
         nominees: currentNomination.nominees,
+        startTime: this._getNominationStageStartTime(),
       };
     } else if (Object.keys(currentNomination.votes).length < this.gameState.getNumPlayers()) {
       return {
@@ -357,6 +386,7 @@ export default class Avalon {
         questIndex === currentQuestIndex &&
         nominationIndex === currentNominationIndex) {
       this.gameState.setAvalonState(`quests/${questIndex}/nominations/${nominationIndex}/nominees`, nomineeKeys);
+      this.gameState.setAvalonState(`quests/${questIndex}/nominations/${nominationIndex}/nominate/${this.gameState.getPlayerKey()}`, Firebase.ServerValue.TIMESTAMP);
     } else {
       throw new Error('invalid inputs for nominate');
     }
@@ -368,6 +398,7 @@ export default class Avalon {
     if (questIndex === currentQuestIndex &&
         nominationIndex === currentNominationIndex) {
       this.gameState.setAvalonState(`quests/${questIndex}/nominations/${nominationIndex}/votes/${this.gameState.getPlayerKey()}`, approve);
+      this.gameState.setAvalonState(`quests/${questIndex}/nominations/${nominationIndex}/voteTimes/${this.gameState.getPlayerKey()}`, Firebase.ServerValue.TIMESTAMP);
     } else {
       throw new Error('invalid inputs for vote');
     }
@@ -378,6 +409,7 @@ export default class Avalon {
     let { questIndex: currentQuestIndex } = avalonState;
     if (questIndex === currentQuestIndex) {
       this.gameState.setAvalonState(`quests/${questIndex}/actions/${this.gameState.getPlayerKey()}`, success);
+      this.gameState.setAvalonState(`quests/${questIndex}/actionTimes/${this.gameState.getPlayerKey()}`, Firebase.ServerValue.TIMESTAMP);
     } else {
       throw new Error('invalid inputs for questAction');
     }

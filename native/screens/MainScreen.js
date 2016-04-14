@@ -26,6 +26,35 @@ function _getModalDataFromId(modalId) {
   return { modalType, questIndex, nominationIndex };
 }
 
+class Timer extends React.Component {
+  componentDidMount() {
+    this._interval = window.setInterval(this._onTick, 1000);
+  }
+
+  _onTick = () => {
+    this.forceUpdate();
+  };
+
+  componentWillUnmount() {
+    window.clearInterval(this._interval);
+  }
+
+  render() {
+    let secondsElapsed = Math.floor((Date.now() - this.props.startTime) / 1000);
+    let secondsString = `${secondsElapsed % 60}`;
+    while (secondsString.length < 2) {
+      secondsString = `0${secondsString}`;
+    }
+    return (
+      <View>
+        <Text style={styles.timerText}>
+          {Math.floor(secondsElapsed / 60)}:{secondsString}
+        </Text>
+      </View>
+    );
+  }
+}
+
 class MainScreen extends React.Component {
   state = {
     modalsSeen: [],
@@ -109,8 +138,13 @@ class MainScreen extends React.Component {
       }
     }
 
+    let timestamp;
+    if (avalonState.stage === Stage.Nominating) {
+      timestamp = <Timer startTime={avalonState.startTime} />;
+    }
     return (
       <View style={styles.container}>
+        {timestamp}
         <GameStateView
           gameState={this.props.gameState}
           avalon={this.props.avalon}
@@ -155,5 +189,10 @@ const styles = StyleSheet.create({
     left: 20,
     position: 'absolute',
     top: 30,
+  },
+  timerText: {
+    fontSize: 20,
+    marginBottom: 50,
+    textAlign: 'center',
   },
 });
