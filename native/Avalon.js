@@ -108,7 +108,7 @@ export default class Avalon {
     return nomination.votes && Object.keys(nomination.votes).length === this.gameState.getNumPlayers();
   }
 
-  _isNominationPass(nomination) {
+  isNominationPass(nomination) {
     let yesVotes = Object.keys(nomination.votes).filter((key) => nomination.votes[key]);
     return yesVotes.length > this.gameState.getNumPlayers() / 2;
   }
@@ -163,7 +163,7 @@ export default class Avalon {
       nominationIndex = currentQuest.nominations.length - 1;
       let lastNomination = currentQuest.nominations[nominationIndex];
 
-      if (this._isNominationFinished(lastNomination) && !this._isNominationPass(lastNomination)) {
+      if (this._isNominationFinished(lastNomination) && !this.isNominationPass(lastNomination)) {
         nominationIndex++;
       }
     }
@@ -171,7 +171,7 @@ export default class Avalon {
     return nominationIndex;
   }
 
-  _getNominationByIndex(questIndex, nominationIndex) {
+  getNominationByIndex(questIndex, nominationIndex) {
     let quest = this._getQuestByIndex(questIndex);
     let ret;
     if (quest.nominations.length > nominationIndex) {
@@ -191,7 +191,7 @@ export default class Avalon {
   }
 
   _getCurrentNomination() {
-    return this._getNominationByIndex(this._getCurrentQuestIndex(), this._getCurrentNominationIndex());
+    return this.getNominationByIndex(this._getCurrentQuestIndex(), this._getCurrentNominationIndex());
   }
 
   _getLeaderKey(questIndex, nominationIndex) {
@@ -259,7 +259,7 @@ export default class Avalon {
         nominees: currentNomination.nominees,
         votes: currentNomination.votes,
       };
-    } else if (this._isNominationPass(currentNomination)) {
+    } else if (this.isNominationPass(currentNomination)) {
       return {
         stage: Stage.Questing,
         leaderKey: this._getLeaderKey(questIndex, nominationIndex),
