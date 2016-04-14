@@ -237,6 +237,22 @@ export default class Avalon {
     return PlayerCountToQuestSizes[Object.keys(this.gameState.model.players).length];
   }
 
+  getQuestOutcome(questIndex) {
+    let quest = this._getQuestByIndex(questIndex);
+
+    if (Object.keys(quest.actions).length === 0) {
+      return null;
+    }
+
+    let numFail = Object.keys(quest.actions).filter((key) => !quest.actions[key]).length;
+    return {
+      nominees: quest.nominations[quest.nominations.length - 1].nominees,
+      numSuccess: Object.keys(quest.actions).filter((key) => quest.actions[key]).length,
+      numFail: numFail,
+      verdict: numFail === 0,
+    }
+  }
+
   getState() {
     let currentQuest = this._getCurrentQuest();
     let questIndex = currentQuest.index;
