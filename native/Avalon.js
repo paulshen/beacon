@@ -184,12 +184,9 @@ export default class Avalon {
     let model = this._getAvalonModel();
     let questIndex = 0;
     if (model.quests) {
-      let questKeys = Object.keys(model.quests);
-      questKeys.sort();
-      questIndex = questKeys.length - 1;
-      let lastQuest = model.quests[questKeys[questIndex]];
+      questIndex = model.quests.length - 1;
 
-      if (this._isQuestFinished(lastQuest, questIndex)) {
+      if (this._isQuestFinished(model.quests[questIndex], questIndex)) {
         questIndex++;
       }
     }
@@ -200,14 +197,10 @@ export default class Avalon {
   _getQuestByIndex(questIndex) {
     let model = this._getAvalonModel();
     let ret;
-    if (model.quests && Object.keys(model.quests).length > questIndex) {
-      let questKeys = Object.keys(model.quests);
-      questKeys.sort();
-      let quest = model.quests[questKeys[questIndex]];
-      let nominationKeys = Object.keys(quest.nominations);
-      nominationKeys.sort();
+    if (model.quests && model.quests.length > questIndex) {
+      let quest = model.quests[questIndex];
       ret = {
-        nominations: nominationKeys.map((key) => quest.nominations[key]),
+        nominations: quest.nominations || [],
         actions: quest.actions || {},
       };
     }
@@ -243,9 +236,8 @@ export default class Avalon {
     let ret;
     if (quest.nominations.length > nominationIndex) {
       let nomination = quest.nominations[nominationIndex];
-      let nomineeKeys = Object.keys(nomination.nominees);
       ret = {
-        nominees: nomineeKeys.map((key) => nomination.nominees[key]),
+        nominees: nomination.nominees || [],
         votes: nomination.votes || {},
       };
     }
@@ -266,10 +258,8 @@ export default class Avalon {
 
     let model = this._getAvalonModel();
     if (model.quests) {
-      let questKeys = Object.keys(model.quests);
-      questKeys.sort();
       for (let i = 0; i < questIndex; i++) {
-        let quest = model.quests[questKeys[i]];
+        let quest = model.quests[i];
         if (quest.nominations) {
           numNominations += Object.keys(quest.nominations).length;
         }
