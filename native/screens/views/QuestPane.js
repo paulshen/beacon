@@ -5,28 +5,35 @@ import React, {
 } from 'react-native';
 
 import { Button } from '../../ui/Elements.js';
+import { isSherlockInspecting, SherlockInspect } from './role_specific/SherlockViews.js';
 
 export default class QuestPane extends React.Component {
   render() {
-    // if the player is not on the mission or has completed their action, show the waiting state
+    let { gameState, avalon, avalonState } = this.props;
+
+    let isTakingAction = (
+      avalonState.nominees.indexOf(gameState.getPlayerKey()) !== -1 &&
+      !(gameState.getPlayerKey() in avalonState.actions)
+    );
     let bottomView;
-    if (this.props.avalonState.nominees.indexOf(this.props.gameState.getPlayerKey()) === -1 ||
-        this.props.gameState.getPlayerKey() in this.props.avalonState.actions) {
+    if (isTakingAction) {
+      bottomView =
+        <View style={styles.buttonsContainer}>
+          <Button onPress={() => avalon.questAction(avalonState.questIndex, false)}>
+            Fail
+          </Button>
+          <Button onPress={() => avalon.questAction(avalonState.questIndex, true)}>
+            Success
+          </Button>
+        </View>;
+    } else if (isSherlockInspecting(gameState, avalon, avalonState)) {
+      bottomView = <SherlockInspect {...this.props} />;
+    } else {
       bottomView =
         <View style={styles.container}>
           <Text>
             Waiting for others...
           </Text>
-        </View>;
-    } else {
-      bottomView =
-        <View style={styles.buttonsContainer}>
-          <Button onPress={() => this.props.avalon.questAction(this.props.avalonState.questIndex, false)}>
-            Fail
-          </Button>
-          <Button onPress={() => this.props.avalon.questAction(this.props.avalonState.questIndex, true)}>
-            Success
-          </Button>
         </View>;
     }
 
@@ -35,10 +42,10 @@ export default class QuestPane extends React.Component {
         <Text>
           Quest in progress:
         </Text>
-        {this.props.avalonState.nominees.map((playerKey) => {
+        {avalonState.nominees.map((playerKey) => {
           return (
             <Text key={playerKey}>
-              {this.props.gameState.getNameForPlayerKey(playerKey)}
+              {gameState.getNameForPlayerKey(playerKey)}
             </Text>
           );
         })}

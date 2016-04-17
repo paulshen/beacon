@@ -13,6 +13,7 @@ export const Role = {
   Follower: 'Follower',
   Merlin: 'Merlin',
   Percival: 'Percival',
+  Sherlock: 'Sherlock',
   Minion: 'Minion',
   Assassin: 'Assassin',
   Morgana: 'Morgana',
@@ -24,6 +25,7 @@ const RoleToTeam = {
   [Role.Follower]: Team.Good,
   [Role.Merlin]: Team.Good,
   [Role.Percival]: Team.Good,
+  [Role.Sherlock]: Team.Good,
   [Role.Minion]: Team.Bad,
   [Role.Assassin]: Team.Bad,
   [Role.Morgana]: Team.Bad,
@@ -35,6 +37,7 @@ const RoleToKnownRoles = {
   [Role.Follower]: [],
   [Role.Merlin]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Oberon],
   [Role.Percival]: [Role.Merlin, Role.Morgana],
+  [Role.Sherlock]: [],
   [Role.Minion]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred],
   [Role.Assassin]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred],
   [Role.Morgana]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred],
@@ -168,7 +171,29 @@ export default class Avalon {
   }
 
   _isQuestFinished(quest, questIndex) {
-    return quest.actions && Object.keys(quest.actions).length === this.getQuestSizes()[questIndex];
+    let actionsFinished = (
+      quest.actions &&
+      Object.keys(quest.actions).length === this.getQuestSizes()[questIndex]
+    );
+    if (actionsFinished) {
+      if (!this.isRoleInGame(Role.Sherlock)) {
+        return true;
+      }
+
+      let nominees = quest.nominations[quest.nominations.length - 1].nominees;
+      let roles = this.getRoles();
+      for (let i = 0; i < nominees.length; i++) {
+        if (roles[nominees[i]] === Role.Sherlock) {
+          return true;
+        }
+      }
+
+      if (quest.sherlockInspected) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   _isNominationFinished(nomination) {
@@ -202,6 +227,7 @@ export default class Avalon {
       ret = {
         nominations: quest.nominations || [],
         actions: quest.actions || {},
+        sherlockInspected: quest.sherlockInspected,
       };
     }
 
@@ -209,6 +235,7 @@ export default class Avalon {
       index: questIndex,
       nominations: [],
       actions: {},
+      sherlockInspected: null,
     }, ret);
   }
 
@@ -286,6 +313,16 @@ export default class Avalon {
     return model && model.initialLeaderKey;
   }
 
+  isRoleInGame(role) {
+    let roles = this.getRoles();
+    for (let key in roles) {
+      if (roles[key] === role) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   getRoleForPlayerKey(playerKey) {
     return this.getRoles()[playerKey];
   }
@@ -301,7 +338,7 @@ export default class Avalon {
   getQuestOutcome(questIndex) {
     let quest = this._getQuestByIndex(questIndex);
 
-    if (Object.keys(quest.actions).length < this.getQuestSizes()[questIndex]) {
+    if (!this._isQuestFinished(quest, questIndex)) {
       return null;
     }
 
@@ -311,7 +348,14 @@ export default class Avalon {
       numSuccess: Object.keys(quest.actions).filter((key) => quest.actions[key]).length,
       numFail: numFail,
       verdict: numFail === 0,
+      sherlockInspected: quest.sherlockInspected,
+      sherlockInspectedAction: quest.actions[quest.sherlockInspected],
     }
+  }
+
+  hasSherlockInspected(questIndex) {
+    let quest = this._getQuestByIndex(questIndex);
+    return !!quest.sherlockInspected;
   }
 
   _getNominationStageStartTime() {
@@ -402,6 +446,16 @@ export default class Avalon {
       this.gameState.setAvalonState(`quests/${questIndex}/actionTimes/${this.gameState.getPlayerKey()}`, Firebase.ServerValue.TIMESTAMP);
     } else {
       throw new Error('invalid inputs for questAction');
+    }
+  }
+
+  sherlockInspect(questIndex, playerKey) {
+    let avalonState = this.getState();
+    let { questIndex: currentQuestIndex } = avalonState;
+    if (questIndex === currentQuestIndex) {
+      this.gameState.setAvalonState(`quests/${questIndex}/sherlockInspected/`, playerKey);
+    } else {
+      throw new Error('invalid inputs for sherlockInspect');
     }
   }
 }

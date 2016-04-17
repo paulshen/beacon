@@ -5,6 +5,7 @@ import React, {
 } from 'react-native';
 
 import { Button } from '../ui/Elements.js';
+import { SherlockResult } from './views/role_specific/SherlockViews.js';
 
 export default class QuestResultScreen extends React.Component {
   render() {
@@ -24,6 +25,7 @@ export default class QuestResultScreen extends React.Component {
         <View><Text>Succeed: {questOutcome.numSuccess}</Text></View>
         <View><Text>Fail: {questOutcome.numFail}</Text></View>
         <View><Text>Verdict: {questOutcome.verdict ? 'Succeed' : 'Fail'}</Text></View>
+        <SherlockResult {...this.props} questOutcome={questOutcome} />
         <View style={styles.okayButton}>
           <Button onPress={() => this.props.onDismiss()}>Okay</Button>
         </View>
