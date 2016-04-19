@@ -12,6 +12,7 @@ import ActionPanel from './views/ActionPanel';
 import RoleScreen from './RoleScreen';
 import QuestResultScreen from './QuestResultScreen';
 import VotingResultScreen from './VotingResultScreen';
+import { KilgraveInfo } from './views/role_specific/KilgraveViews'
 
 const Modals = {
   VotingResult: '1',
@@ -101,6 +102,7 @@ class MainScreen extends React.Component {
         <Text style={styles.label}>
           Current Quest
         </Text>
+        <KilgraveInfo gameState={this.props.gameState} avalon={this.props.avalon} avalonState={avalonState} />
         <Text style={styles.label}>
           Leader: {this.props.gameState.getNameForPlayerKey(avalonState.leaderKey)}
         </Text>

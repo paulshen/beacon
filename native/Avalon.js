@@ -19,6 +19,7 @@ export const Role = {
   Morgana: 'Morgana',
   Mordred: 'Mordred',
   Oberon: 'Oberon',
+  Kilgrave: 'Kilgrave',
 };
 
 const RoleToTeam = {
@@ -31,18 +32,20 @@ const RoleToTeam = {
   [Role.Morgana]: Team.Bad,
   [Role.Mordred]: Team.Bad,
   [Role.Oberon]: Team.Bad,
+  [Role.Kilgrave]: Team.Bad,
 };
 
 const RoleToKnownRoles = {
   [Role.Follower]: [],
-  [Role.Merlin]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Oberon],
+  [Role.Merlin]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Oberon, Role.Kilgrave],
   [Role.Percival]: [Role.Merlin, Role.Morgana],
   [Role.Sherlock]: [],
-  [Role.Minion]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred],
-  [Role.Assassin]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred],
-  [Role.Morgana]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred],
-  [Role.Mordred]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred],
+  [Role.Minion]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred, Role.Kilgrave],
+  [Role.Assassin]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred, Role.Kilgrave],
+  [Role.Morgana]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred, Role.Kilgrave],
+  [Role.Mordred]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred, Role.Kilgrave],
   [Role.Oberon]: [],
+  [Role.Kilgrave]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred, Role.Kilgrave],
 };
 
 const PlayerCountToRoles = {
@@ -175,7 +178,8 @@ export default class Avalon {
       quest.actions &&
       Object.keys(quest.actions).length === this.getQuestSizes()[questIndex]
     );
-    if (actionsFinished) {
+    let kilgraveFinished = !this.isRoleInGame(Role.Kilgrave) || this.hasKilgraveChosen(questIndex + 1);
+    if (actionsFinished && kilgraveFinished) {
       if (!this.isRoleInGame(Role.Sherlock)) {
         return true;
       }
@@ -327,6 +331,10 @@ export default class Avalon {
     return this.getRoles()[playerKey];
   }
 
+  isGood(playerKey) {
+    return RoleToTeam[this.getRoleForPlayerKey(playerKey)] === Team.Good;
+  }
+
   getKnownRolesForPlayerKey(playerKey) {
     return RoleToKnownRoles[this.getRoleForPlayerKey(playerKey)];
   }
@@ -356,6 +364,22 @@ export default class Avalon {
   hasSherlockInspected(questIndex) {
     let quest = this._getQuestByIndex(questIndex);
     return !!quest.sherlockInspected;
+  }
+
+  hasKilgraveChosen(questIndex) {
+    let model = this._getAvalonModel();
+    return model.lastKilgraveAction &&
+           (model.lastKilgraveAction.questIndex >= questIndex ||
+            model.lastKilgraveAction.target);
+  }
+
+  getKilgraveTarget(questIndex) {
+    let model = this._getAvalonModel();
+    if (model.lastKilgraveAction &&
+        model.lastKilgraveAction.questIndex === questIndex) {
+      return model.lastKilgraveAction.target;
+    }
+    return null;
   }
 
   _getNominationStageStartTime() {
@@ -454,8 +478,26 @@ export default class Avalon {
     let { questIndex: currentQuestIndex } = avalonState;
     if (questIndex === currentQuestIndex) {
       this.gameState.setAvalonState(`quests/${questIndex}/sherlockInspected/`, playerKey);
+      this.gameState.setAvalonState(`quests/${questIndex}/actionTimes/sherlock`, Firebase.ServerValue.TIMESTAMP);
     } else {
       throw new Error('invalid inputs for sherlockInspect');
+    }
+  }
+
+  kilgraveMindControl(questIndex, targetPlayerKey) {
+    let avalonState = this.getState();
+    let { questIndex: currentQuestIndex } = avalonState;
+    if (questIndex === currentQuestIndex + 1) {
+      this.gameState.setAvalonState(
+        `lastKilgraveAction`,
+        {
+          questIndex: questIndex,
+          target: targetPlayerKey,
+        }
+      );
+      this.gameState.setAvalonState(`quests/${questIndex - 1}/actionTimes/kilgrave`, Firebase.ServerValue.TIMESTAMP);
+    } else {
+      throw new Error('invalid inputs for kilgraveMindControl');
     }
   }
 }

@@ -19,7 +19,8 @@ class RoleKnowledgeDisplay extends React.Component {
     case Role.Assassin:
     case Role.Morgana:
     case Role.Mordred:
-      return 'Your Fellow Minions (except Mordred):';
+    case Role.Kilgrave:
+      return 'Your Fellow Minions (except Oberon):';
     default:
       return null;
     }
