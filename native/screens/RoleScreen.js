@@ -9,10 +9,14 @@ import { Role } from '../Avalon.js';
 import { Button } from '../ui/Elements.js';
 
 class RoleKnowledgeDisplay extends React.Component {
-  _getKnownRolesDescription(role) {
+  _getKnownRolesDescription(role, avalon) {
     switch (role) {
     case Role.Merlin:
-      return 'The Minions (except Mordred):';
+      if (avalon.isRoleInGame(Role.Mordred)) {
+        return 'The Minions (except Mordred):';
+      } else {
+        return 'The Minions:';
+      }
     case Role.Percival:
       return 'Merlin and Morgana (in no particular order):';
     case Role.Minion:
@@ -20,7 +24,11 @@ class RoleKnowledgeDisplay extends React.Component {
     case Role.Morgana:
     case Role.Mordred:
     case Role.Kilgrave:
-      return 'Your Fellow Minions (except Oberon):';
+      if (avalon.isRoleInGame(Role.Oberon)) {
+        return 'Your Fellow Minions (except Oberon):';
+      } else {
+        return 'Your Fellow Minions:';
+      }
     default:
       return null;
     }
@@ -30,7 +38,7 @@ class RoleKnowledgeDisplay extends React.Component {
     let { gameState, avalon } = this.props;
     let roles = avalon.getRoles();
     let playerRole = avalon.getRoleForPlayerKey(gameState.getPlayerKey());
-    let knownRolesDescription = this._getKnownRolesDescription(playerRole);
+    let knownRolesDescription = this._getKnownRolesDescription(playerRole, avalon);
     if (!knownRolesDescription) {
       return null;
     }
