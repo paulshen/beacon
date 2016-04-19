@@ -6,7 +6,7 @@ export const Stage = {
 
 export const Team = {
   Good: 'Good',
-  Bad: 'Bad',
+  Evil: 'Evil',
 };
 
 export const Role = {
@@ -22,17 +22,22 @@ export const Role = {
   Kilgrave: 'Kilgrave',
 };
 
+const TeamToBasicRole = {
+  [Team.Good]: Role.Follower,
+  [Team.Evil]: Role.Minion,
+};
+
 const RoleToTeam = {
   [Role.Follower]: Team.Good,
   [Role.Merlin]: Team.Good,
   [Role.Percival]: Team.Good,
   [Role.Sherlock]: Team.Good,
-  [Role.Minion]: Team.Bad,
-  [Role.Assassin]: Team.Bad,
-  [Role.Morgana]: Team.Bad,
-  [Role.Mordred]: Team.Bad,
-  [Role.Oberon]: Team.Bad,
-  [Role.Kilgrave]: Team.Bad,
+  [Role.Minion]: Team.Evil,
+  [Role.Assassin]: Team.Evil,
+  [Role.Morgana]: Team.Evil,
+  [Role.Mordred]: Team.Evil,
+  [Role.Oberon]: Team.Evil,
+  [Role.Kilgrave]: Team.Evil,
 };
 
 const RoleToKnownRoles = {
@@ -48,53 +53,30 @@ const RoleToKnownRoles = {
   [Role.Kilgrave]: [Role.Minion, Role.Assassin, Role.Morgana, Role.Mordred, Role.Kilgrave],
 };
 
-const PlayerCountToRoles = {
+const PlayerCountToTeamSizes = {
   5: {
-    [Role.Follower]: 1,
-    [Role.Merlin]: 1,
-    [Role.Percival]: 1,
-    [Role.Assassin]: 1,
-    [Role.Morgana]: 1,
+    [Team.Good]: 3,
+    [Team.Evil]: 2,
   },
   6: {
-    [Role.Follower]: 2,
-    [Role.Merlin]: 1,
-    [Role.Percival]: 1,
-    [Role.Assassin]: 1,
-    [Role.Morgana]: 1,
+    [Team.Good]: 4,
+    [Team.Evil]: 2,
   },
   7: {
-    [Role.Follower]: 2,
-    [Role.Merlin]: 1,
-    [Role.Percival]: 1,
-    [Role.Minion]: 1,
-    [Role.Assassin]: 1,
-    [Role.Morgana]: 1,
+    [Team.Good]: 4,
+    [Team.Evil]: 3,
   },
   8: {
-    [Role.Follower]: 3,
-    [Role.Merlin]: 1,
-    [Role.Percival]: 1,
-    [Role.Assassin]: 1,
-    [Role.Morgana]: 1,
-    [Role.Mordred]: 1,
+    [Team.Good]: 5,
+    [Team.Evil]: 3,
   },
   9: {
-    [Role.Follower]: 4,
-    [Role.Merlin]: 1,
-    [Role.Percival]: 1,
-    [Role.Assassin]: 1,
-    [Role.Morgana]: 1,
-    [Role.Mordred]: 1,
+    [Team.Good]: 6,
+    [Team.Evil]: 3,
   },
   10: {
-    [Role.Follower]: 4,
-    [Role.Merlin]: 1,
-    [Role.Percival]: 1,
-    [Role.Assassin]: 1,
-    [Role.Morgana]: 1,
-    [Role.Mordred]: 1,
-    [Role.Oberon]: 1,
+    [Team.Good]: 6,
+    [Team.Evil]: 4,
   },
 };
 
@@ -133,25 +115,7 @@ export default class Avalon {
   }
 
   start() {
-    this._assignRoles();
     this._assignFirstLeader();
-    this.gameState.setAvalonState('startTime', Firebase.ServerValue.TIMESTAMP);
-  }
-
-  _assignRoles() {
-    let playerKeys = Object.keys(this.gameState.model.players);
-    shuffle(playerKeys);
-    let roleCounts = PlayerCountToRoles[playerKeys.length];
-    let roles = {};
-    let i = 0;
-    for (let role in roleCounts) {
-      let start = i;
-      for (; i < start + roleCounts[role]; i++) {
-        roles[playerKeys[i]] = role;
-      }
-    }
-
-    this.gameState.setAvalonState('roles', roles);
   }
 
   _assignFirstLeader() {
@@ -159,6 +123,60 @@ export default class Avalon {
     let initialLeaderKey = playerKeys[Math.floor(Math.random() * playerKeys.length)];
 
     this.gameState.setAvalonState('initialLeaderKey', initialLeaderKey);
+  }
+
+  getSelectableRolesByTeam() {
+    let teamSizes = PlayerCountToTeamSizes[this.gameState.getNumPlayers()];
+    let selectableRolesByTeam = {};
+    for (let team in teamSizes) {
+      selectableRolesByTeam[team] = {
+        maxCount: teamSizes[team],
+        roles: [],
+      };
+    }
+    for (let role in RoleToTeam) {
+      let team = RoleToTeam[role];
+      if (TeamToBasicRole[team] !== role) {
+        selectableRolesByTeam[team].roles.push(role);
+      }
+    }
+    return selectableRolesByTeam;
+  }
+
+  assignRoles(selectedRolesByTeam) {
+    this._assignRoles(selectedRolesByTeam);
+    this.gameState.setAvalonState('startTime', Firebase.ServerValue.TIMESTAMP);
+  }
+
+  _assignRoles(selectedRolesByTeam) {
+    let playerKeys = Object.keys(this.gameState.model.players);
+    shuffle(playerKeys);
+    let teamSizes = PlayerCountToTeamSizes[playerKeys.length];
+
+    let roles = {};
+    let numRolesAssigned = 0;
+    for (let team in selectedRolesByTeam) {
+      let selectedRoles = selectedRolesByTeam[team];
+      for (let i = 0; i < selectedRoles.length; i++) {
+        roles[playerKeys[numRolesAssigned]] = selectedRoles[i];
+        numRolesAssigned++;
+        teamSizes[team]--;
+      }
+    }
+
+    for (let team in teamSizes) {
+      while (teamSizes[team] > 0) {
+        roles[playerKeys[numRolesAssigned]] = TeamToBasicRole[team];
+        numRolesAssigned++;
+        teamSizes[team]--;
+      }
+    }
+
+    if (numRolesAssigned !== playerKeys.length) {
+      throw new Error('error assigning roles');
+    }
+
+    this.gameState.setAvalonState('roles', roles);
   }
 
   _getPossiblyUndefinedAvalonModel() {

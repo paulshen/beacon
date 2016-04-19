@@ -8,6 +8,7 @@ import React, {
 
 import JoinScreen from './screens/JoinScreen';
 import WaitingRoomScreen from './screens/WaitingRoomScreen';
+import SelectRolesScreen from './screens/SelectRolesScreen';
 import MainScreen from './screens/MainScreen';
 import { withGameState } from './GameState';
 
@@ -17,8 +18,11 @@ class Beacon extends Component {
     if (!gameState.getPlayers() || !gameState.getPlayerKey()) {
       return <JoinScreen />;
     }
-    if (avalon.getRoles() && avalon.getInitialLeaderKey()) {
-      return <MainScreen />;
+    if (avalon.getInitialLeaderKey()) {
+      if (avalon.getRoles()) {
+        return <MainScreen />;
+      }
+      return <SelectRolesScreen />;
     }
     return <WaitingRoomScreen />;
   }
