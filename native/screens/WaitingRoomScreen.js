@@ -6,7 +6,7 @@ import React, {
 } from 'react-native';
 
 import { withGameState } from '../GameState';
-import { Button, UIText } from '../ui/Elements';
+import { Screen, Button, UIText, List } from '../ui/Elements';
 
 class WaitingRoomScreen extends React.Component {
   render() {
@@ -16,22 +16,26 @@ class WaitingRoomScreen extends React.Component {
     }
 
     return (
-      <View style={styles.container}>
+      <Screen style={styles.container}>
         <UIText.Title style={styles.label}>
           GAME {this.props.gameState.getGameId()}
         </UIText.Title>
+        <List.Root>
         {Object.keys(players).map((playerKey) => {
           let playerName = players[playerKey];
           return (
-            <UIText.Body key={playerKey}>
-              {playerName}{this.props.gameState.getPlayerKey() === playerKey ? ' (you)' : null}
-            </UIText.Body>
+            <List.Item key={playerKey}>
+              <UIText.Body>
+                {playerName}{this.props.gameState.getPlayerKey() === playerKey ? ' (you)' : null}
+              </UIText.Body>
+            </List.Item>
           );
         })}
+        </List.Root>
         <View style={styles.buttonWrapper}>
-          <Button onPress={() => this.props.avalon.start()}>Start</Button>
+          <Button onPress={() => this.props.avalon.start()}>START</Button>
         </View>
-      </View>
+      </Screen>
     );
   }
 }
@@ -41,9 +45,6 @@ export default WaitingRoomScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
   },
   label: {
     textAlign: 'center',

@@ -5,7 +5,7 @@ import React, {
   View,
 } from 'react-native';
 
-import { Button } from '../../ui/Elements';
+import { Button, List, UIText } from '../../ui/Elements';
 
 export default class NominatePane extends React.Component {
   state = {
@@ -47,32 +47,34 @@ export default class NominatePane extends React.Component {
     let { gameState, avalon, avalonState } = this.props;
 
     if (avalonState.leaderKey !== gameState.getPlayerKey()) {
-      return <View><Text>Waiting...</Text></View>;
+      return <View><UIText.Body style={styles.WaitingText}>Waiting for nomination...</UIText.Body></View>;
     }
 
     let players = gameState.getPlayers();
     let playerRows = Object.keys(players).map((playerKey) => {
       return (
-        <View style={styles.row} key={playerKey}>
-          <Text style={styles.rowName}>{gameState.getNameForPlayerKey(playerKey)}</Text>
+        <List.Item style={styles.row} key={playerKey}>
+          <UIText.Body style={styles.rowName}>{gameState.getNameForPlayerKey(playerKey)}</UIText.Body>
           <TouchableOpacity onPress={() => this._toggleNominee(playerKey)}>
-            <Text style={styles.rowName}>
+            <UIText.Body style={styles.rowName}>
               {this.state.nomineeKeys.indexOf(playerKey) !== -1 ? 'Unselect' : 'Select'}
-            </Text>
+            </UIText.Body>
           </TouchableOpacity>
-        </View>
+        </List.Item>
       );
     });
 
     return (
       <View style={styles.root}>
-        <Text style={styles.title}>Nominate</Text>
-        {playerRows}
-        <View style={styles.nominateButton}>
+        <UIText.Title style={styles.title}>NOMINATE</UIText.Title>
+        <List.Root style={styles.NominateList}>
+          {playerRows}
+        </List.Root>
+        <Button.Wrapper style={styles.nominateButton}>
           <Button onPress={this._onNominate} disabled={!this._didSelectCorrectNumber()}>
-            Nominate
+            NOMINATE
           </Button>
-        </View>
+        </Button.Wrapper>
       </View>
     );
   }
@@ -92,8 +94,13 @@ const styles = StyleSheet.create({
   rowName: {
     flex: 1,
   },
+  NominateList: {
+    marginHorizontal: 30,
+  },
   nominateButton: {
-    alignItems: 'center',
-    marginTop: 50,
+    marginTop: 20,
+  },
+  WaitingText: {
+    textAlign: 'center',
   },
 });

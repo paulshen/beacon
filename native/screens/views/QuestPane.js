@@ -4,7 +4,7 @@ import React, {
   View
 } from 'react-native';
 
-import { Button } from '../../ui/Elements.js';
+import { Button, List, UIText } from '../../ui/Elements.js';
 import { isSherlockInspecting, SherlockInspect } from './role_specific/SherlockViews.js';
 import { isKilgraveChoosing, KilgraveChoose } from './role_specific/KilgraveViews.js';
 
@@ -26,25 +26,31 @@ export default class QuestPane extends React.Component {
     } else {
       bottomView =
         <View style={styles.container}>
-          <Text>
+          <UIText.Body style={styles.WaitingText}>
             Waiting for others...
-          </Text>
+          </UIText.Body>
         </View>;
     }
 
     return (
       <View style={styles.container}>
-        <Text>
-          Quest in progress:
-        </Text>
-        {avalonState.nominees.map((playerKey) => {
-          return (
-            <Text key={playerKey}>
-              {gameState.getNameForPlayerKey(playerKey)}
-            </Text>
-          );
-        })}
-        {bottomView}
+        <UIText.Title style={styles.title}>
+          QUEST IN PROGRESS
+        </UIText.Title>
+        <List.Root>
+          {avalonState.nominees.map((playerKey) => {
+            return (
+              <List.Item key={playerKey}>
+                <UIText.Body>
+                  {gameState.getNameForPlayerKey(playerKey)}
+                </UIText.Body>
+              </List.Item>
+            );
+          })}
+        </List.Root>
+        <View style={styles.BottomView}>
+          {bottomView}
+        </View>
       </View>
     );
   }
@@ -54,12 +60,12 @@ class ActionButtons extends React.Component {
   render() {
     let { gameState, avalon, avalonState } = this.props;
     let failButton =
-      <Button onPress={() => avalon.questAction(avalonState.questIndex, false)}>
-        Fail
+      <Button style={styles.QuestButton} onPress={() => avalon.questAction(avalonState.questIndex, false)}>
+        FAIL
       </Button>;
     let successButton =
-      <Button onPress={() => avalon.questAction(avalonState.questIndex, true)}>
-        Success
+      <Button style={styles.QuestButton} onPress={() => avalon.questAction(avalonState.questIndex, true)}>
+        SUCCEED
       </Button>;
 
     if (avalon.getKilgraveTarget(avalonState.questIndex) === gameState.getPlayerKey()) {
@@ -70,7 +76,11 @@ class ActionButtons extends React.Component {
         </View>
       );
     } else if (avalon.isGood(gameState.getPlayerKey())) {
-      return successButton;
+      return (
+        <View style={styles.buttonsContainer}>
+          {successButton}
+        </View>
+      );
     } else {
       return (
         <View style={styles.buttonsContainer}>
@@ -85,11 +95,23 @@ class ActionButtons extends React.Component {
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 30,
+  },
+  title: {
+    textAlign: 'center',
   },
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  BottomView: {
+    marginTop: 20,
+  },
+  QuestButton: {
+    marginHorizontal: 20,
+  },
+  WaitingText: {
+    textAlign: 'center',
   },
 });

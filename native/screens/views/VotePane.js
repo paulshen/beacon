@@ -4,7 +4,7 @@ import React, {
   View
 } from 'react-native';
 
-import { Button } from '../../ui/Elements.js';
+import { Button, List, UIText } from '../../ui/Elements.js';
 
 export default class VotePane extends React.Component {
   _vote(approve) {
@@ -21,34 +21,38 @@ export default class VotePane extends React.Component {
     if (this.props.gameState.getPlayerKey() in this.props.avalonState.votes) {
       bottomView =
         <View style={styles.container}>
-          <Text>
+          <UIText.Body style={styles.WaitingText}>
             Waiting for others to vote...
-          </Text>
+          </UIText.Body>
         </View>;
     } else {
       bottomView =
         <View style={styles.buttonsContainer}>
-          <Button onPress={() => this._vote(false)}>
-            Reject
+          <Button style={styles.Button} onPress={() => this._vote(false)}>
+            REJECT
           </Button>
-          <Button onPress={() => this._vote(true)}>
-            Approve
+          <Button style={styles.Button} onPress={() => this._vote(true)}>
+            APPROVE
           </Button>
         </View>;
     }
 
     return (
       <View style={styles.container}>
-        <Text>
-          {this.props.gameState.getNameForPlayerKey(this.props.avalonState.leaderKey)} nominated:
-        </Text>
-        {this.props.avalonState.nominees.map((playerKey) => {
-          return (
-            <Text key={playerKey}>
-              {this.props.gameState.getNameForPlayerKey(playerKey)}
-            </Text>
-          );
-        })}
+        <UIText.Title style={styles.Title}>
+          {this.props.gameState.getNameForPlayerKey(this.props.avalonState.leaderKey).toUpperCase()} NOMINATED
+        </UIText.Title>
+        <List.Root style={styles.Nominees}>
+          {this.props.avalonState.nominees.map((playerKey) => {
+            return (
+              <List.Item key={playerKey}>
+                <UIText.Body>
+                  {this.props.gameState.getNameForPlayerKey(playerKey)}
+                </UIText.Body>
+              </List.Item>
+            );
+          })}
+        </List.Root>
         {bottomView}
       </View>
     );
@@ -58,11 +62,24 @@ export default class VotePane extends React.Component {
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
-    alignItems: 'center',
+  },
+  Title: {
+    textAlign: 'center',
+  },
+  Nominees: {
+    marginBottom: 40,
+    marginHorizontal: 50,
   },
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  Button: {
+    marginHorizontal: 20,
+    paddingHorizontal: 30,
+  },
+  WaitingText: {
+    textAlign: 'center',
   },
 });

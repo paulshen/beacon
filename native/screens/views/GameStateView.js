@@ -5,6 +5,9 @@ import React, {
   View
 } from 'react-native';
 
+import { UIText } from '../../ui/Elements';
+import Colors from '../../ui/Colors';
+
 export default class GameStateView extends React.Component {
   render() {
     return (
@@ -26,7 +29,7 @@ export default class GameStateView extends React.Component {
 
 class QuestView extends React.Component {
   render() {
-    let content = <Text style={styles.label}>{this.props.questSize}</Text>;
+    let content = <UIText.Body>{this.props.questSize}</UIText.Body>;
     let outcome = this.props.avalon.getQuestOutcome(this.props.questIndex);
 
     if (outcome) {
@@ -49,18 +52,28 @@ class QuestView extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
+    borderBottomWidth: 2,
+    borderColor: '#19829b',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 30,
+    paddingVertical: 50,
   },
   questView: {
-    width: 20,
-    height: 20,
+    alignItems: 'center',
+    borderColor: '#0e4958',
+    borderRadius: 20,
+    borderWidth: 2,
+    justifyContent: 'center',
+    marginHorizontal: 10,
+    width: 40,
+    height: 40,
   },
   success: {
-    backgroundColor: 'green',
+    borderColor: Colors.Success,
   },
   fail: {
-    backgroundColor: 'red',
+    borderColor: Colors.Fail,
   },
 });

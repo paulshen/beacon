@@ -1,6 +1,7 @@
 import React, {
   AppRegistry,
   Component,
+  StatusBar,
   StyleSheet,
   Text,
   View
@@ -13,6 +14,10 @@ import MainScreen from './screens/MainScreen';
 import { withGameState } from './GameState';
 
 class Beacon extends Component {
+  componentDidMount() {
+    StatusBar.setBarStyle('light-content');
+  }
+
   render() {
     let { gameState, avalon } = this.props;
     if (!gameState.getPlayers() || !gameState.getPlayerKey()) {

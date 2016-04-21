@@ -1,12 +1,9 @@
 import React, {
   StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
   View
 } from 'react-native';
 
-import { Button } from '../ui/Elements';
+import { Button, Screen, UIText } from '../ui/Elements';
 import { joinGame } from '../GameState';
 
 export default class JoinScreen extends React.Component {
@@ -22,46 +19,36 @@ export default class JoinScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.label}>
-          Game ID:
-        </Text>
-        <TextInput
+      <Screen>
+        <UIText.Title style={styles.label}>GAME ID</UIText.Title>
+        <UIText.Input
           style={styles.input}
           onChangeText={(gameId) => this.setState({gameId})}
           value={this.state.gameId}
           autoCorrect={false}
         />
-        <Text style={styles.label}>
-          Name:
-        </Text>
-        <TextInput
+        <UIText.Title style={styles.label}>NAME</UIText.Title>
+        <UIText.Input
           style={styles.input}
           onChangeText={(name) => this.setState({name})}
           value={this.state.name}
           autoCorrect={false}
         />
-        <Button onPress={this._onPressJoin}>Join</Button>
-      </View>
+        <Button.Wrapper>
+          <Button onPress={this._onPressJoin}>JOIN</Button>
+        </Button.Wrapper>
+      </Screen>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   label: {
-    fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+    marginBottom: 10,
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    margin: 10,
+    marginBottom: 40,
+    marginHorizontal: 30,
   },
 });

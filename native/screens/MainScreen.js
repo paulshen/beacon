@@ -1,4 +1,5 @@
 import React, {
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -13,6 +14,7 @@ import RoleScreen from './RoleScreen';
 import QuestResultScreen from './QuestResultScreen';
 import VotingResultScreen from './VotingResultScreen';
 import { KilgraveInfo } from './views/role_specific/KilgraveViews'
+import { Button, Cells, Screen, UIText } from '../ui/Elements';
 
 const Modals = {
   VotingResult: '1',
@@ -47,11 +49,9 @@ class Timer extends React.Component {
       secondsString = `0${secondsString}`;
     }
     return (
-      <View>
-        <Text style={styles.timerText}>
-          {Math.floor(secondsElapsed / 60)}:{secondsString}
-        </Text>
-      </View>
+      <UIText.Body>
+        {Math.floor(secondsElapsed / 60)}:{secondsString}
+      </UIText.Body>
     );
   }
 }
@@ -97,18 +97,35 @@ class MainScreen extends React.Component {
   }
 
   _renderQuestInfo(avalonState) {
+    let timestamp;
+    if (avalonState.stage === Stage.Nominating) {
+      timestamp =
+        <Cells.Item>
+          <UIText.Title>TIME</UIText.Title>
+          <Timer startTime={avalonState.startTime} />
+        </Cells.Item>;
+    }
     return (
       <View style={styles.questInfoContainer}>
-        <Text style={styles.label}>
-          Current Quest
-        </Text>
+        <UIText.Title style={styles.label}>
+          CURRENT QUEST
+        </UIText.Title>
         <KilgraveInfo gameState={this.props.gameState} avalon={this.props.avalon} avalonState={avalonState} />
-        <Text style={styles.label}>
-          Leader: {this.props.gameState.getNameForPlayerKey(avalonState.leaderKey)}
-        </Text>
-        <Text style={styles.label}>
-          Vote: {avalonState.nominationIndex + 1} of 5
-        </Text>
+        <Cells.Root>
+          <Cells.Item>
+            <UIText.Title>LEADER</UIText.Title>
+            <UIText.Body>
+              {this.props.gameState.getNameForPlayerKey(avalonState.leaderKey)}
+            </UIText.Body>
+          </Cells.Item>
+          <Cells.Item>
+            <UIText.Title>VOTE</UIText.Title>
+            <UIText.Body>
+              {avalonState.nominationIndex + 1} of 5
+            </UIText.Body>
+          </Cells.Item>
+          {timestamp}
+        </Cells.Root>
       </View>
     );
   }
@@ -140,27 +157,24 @@ class MainScreen extends React.Component {
       }
     }
 
-    let timestamp;
-    if (avalonState.stage === Stage.Nominating) {
-      timestamp = <Timer startTime={avalonState.startTime} />;
-    }
     return (
-      <View style={styles.container}>
-        {timestamp}
+      <Screen style={styles.container}>
         <GameStateView
           gameState={this.props.gameState}
           avalon={this.props.avalon}
           avalonState={avalonState}
           showQuestResultModal={(questIndex) => this.setState({modalIdToShow: _getIdForModal(Modals.QuestResult, questIndex)})}
         />
-        {this._renderQuestInfo(avalonState)}
-        <ActionPanel gameState={this.props.gameState} avalon={this.props.avalon} avalonState={avalonState} />
-        <TouchableOpacity
+        <Button.Small
           onPress={() => this.setState({modalIdToShow: _getIdForModal(Modals.Role)})}
           style={styles.roleButton}>
-          <Text>Role</Text>
-        </TouchableOpacity>
-      </View>
+          {this.props.gameState.getPlayerName()}
+        </Button.Small>
+        <ScrollView style={styles.ScrollView}>
+          {this._renderQuestInfo(avalonState)}
+          <ActionPanel gameState={this.props.gameState} avalon={this.props.avalon} avalonState={avalonState} />
+        </ScrollView>
+      </Screen>
     );
   }
 }
@@ -170,8 +184,8 @@ export default MainScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 50,
   },
   gameStateContainer: {
     flexDirection: 'row',
@@ -180,21 +194,19 @@ const styles = StyleSheet.create({
   },
   questInfoContainer: {
     justifyContent: 'center',
-    alignItems: 'center',
+    paddingTop: 30,
   },
   label: {
-    fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+    marginBottom: 20,
   },
   roleButton: {
     left: 20,
     position: 'absolute',
     top: 30,
   },
-  timerText: {
-    fontSize: 20,
-    marginBottom: 50,
-    textAlign: 'center',
+  ScrollView: {
+    flex: 1,
+    paddingBottom: 30,
   },
 });

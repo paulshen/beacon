@@ -6,28 +6,28 @@ import React, {
 } from 'react-native';
 
 import { Role } from '../Avalon.js';
-import { Button } from '../ui/Elements.js';
+import { Button, List, Screen, UIText } from '../ui/Elements.js';
 
 class RoleKnowledgeDisplay extends React.Component {
   _getKnownRolesDescription(role, avalon) {
     switch (role) {
     case Role.Merlin:
       if (avalon.isRoleInGame(Role.Mordred)) {
-        return 'The Minions (except Mordred):';
+        return 'The Minions\n(except Mordred)';
       } else {
-        return 'The Minions:';
+        return 'The Minions';
       }
     case Role.Percival:
-      return 'Merlin and Morgana (in no particular order):';
+      return 'Merlin and Morgana\n(in no particular order)';
     case Role.Minion:
     case Role.Assassin:
     case Role.Morgana:
     case Role.Mordred:
     case Role.Kilgrave:
       if (avalon.isRoleInGame(Role.Oberon)) {
-        return 'Your Fellow Minions (except Oberon):';
+        return 'Your Fellow Minions\n(except Oberon)';
       } else {
-        return 'Your Fellow Minions:';
+        return 'Your Fellow Minions';
       }
     default:
       return null;
@@ -47,7 +47,9 @@ class RoleKnowledgeDisplay extends React.Component {
     let knownPlayersList = Object.keys(roles).map((playerKey) => {
       if (knownRoles.indexOf(roles[playerKey]) !== -1) {
         return (
-          <View key={playerKey}><Text>{gameState.getNameForPlayerKey(playerKey)}</Text></View>
+          <List.Item key={playerKey}>
+            <UIText.Body>{gameState.getNameForPlayerKey(playerKey)}</UIText.Body>
+          </List.Item>
         );
       } else {
         return null;
@@ -55,10 +57,12 @@ class RoleKnowledgeDisplay extends React.Component {
     });
     return (
       <View>
-        <Text>
-          {knownRolesDescription}
-        </Text>
-        {knownPlayersList}
+        <UIText.Title style={styles.KnownRoleDescriptionTitle}>
+          {knownRolesDescription.toUpperCase()}
+        </UIText.Title>
+        <List.Root style={styles.KnownRolesList}>
+          {knownPlayersList}
+        </List.Root>
       </View>
     );
   }
@@ -69,29 +73,38 @@ export default class RoleScreen extends React.Component {
     let { gameState, avalon } = this.props;
     let playerRole = avalon.getRoleForPlayerKey(gameState.getPlayerKey());
     return (
-      <View style={styles.container}>
-        <Text style={styles.label}>
+      <Screen style={styles.container}>
+        <UIText.Body style={styles.label}>
           {gameState.getPlayerName()}
-        </Text>
-        <Text style={styles.label}>
+        </UIText.Body>
+        <UIText.Body style={styles.label}>
           You are {playerRole}
-        </Text>
+        </UIText.Body>
         <RoleKnowledgeDisplay gameState={gameState} avalon={avalon} />
-        <Button onPress={() => this.props.onDismiss()}>Okay</Button>
-      </View>
+        <Button.Wrapper style={styles.Button}>
+          <Button onPress={() => this.props.onDismiss()}>OKAY</Button>
+        </Button.Wrapper>
+      </Screen>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   label: {
-    fontSize: 20,
     textAlign: 'center',
     margin: 10,
+  },
+  KnownRoleDescriptionTitle: {
+    marginTop: 30,
+    textAlign: 'center',
+  },
+  KnownRolesList: {
+    marginBottom: 30,
+    marginHorizontal: 60,
+  },
+  Button: {
+    marginTop: 50,
   },
 });

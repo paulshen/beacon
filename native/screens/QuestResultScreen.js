@@ -4,8 +4,9 @@ import React, {
   View,
 } from 'react-native';
 
-import { Button } from '../ui/Elements.js';
+import { Button, Cells, List, Screen, UIText } from '../ui/Elements.js';
 import { SherlockResult } from './views/role_specific/SherlockViews.js';
+import Colors from '../ui/Colors';
 
 export default class QuestResultScreen extends React.Component {
   render() {
@@ -15,43 +16,56 @@ export default class QuestResultScreen extends React.Component {
       throw new Error('showing QuestResultScreen without quest');
     }
     let nominees = questOutcome.nominees.map((nomineeKey) => (
-      <View key={nomineeKey}><Text>{gameState.getNameForPlayerKey(nomineeKey)}</Text></View>
+      <List.Item key={nomineeKey}><UIText.Body>{gameState.getNameForPlayerKey(nomineeKey)}</UIText.Body></List.Item>
     ));
     return (
-      <View style={styles.container}>
-        <Text style={styles.label}>Nominees</Text>
-        <View>{nominees}</View>
-        <Text style={styles.label}>Outcome</Text>
-        <View><Text>Succeed: {questOutcome.numSuccess}</Text></View>
-        <View><Text>Fail: {questOutcome.numFail}</Text></View>
-        <View><Text>Verdict: {questOutcome.verdict ? 'Succeed' : 'Fail'}</Text></View>
+      <Screen style={styles.container}>
+        <UIText.Title style={styles.label}>NOMINEES</UIText.Title>
+        <List.Root style={styles.nominees}>{nominees}</List.Root>
+        <UIText.Title style={styles.label}>
+          {'OUTCOME: '}
+          <Text style={questOutcome.verdict ? styles.SuccessText : styles.FailText}>
+            {questOutcome.verdict ? 'SUCCEED' : 'FAIL'}
+          </Text>
+        </UIText.Title>
+        <Cells.Root>
+          <Cells.Item>
+            <UIText.Title>SUCCEED</UIText.Title>
+            <UIText.Body>{questOutcome.numSuccess}</UIText.Body>
+          </Cells.Item>
+          <Cells.Item>
+            <UIText.Title>FAIL</UIText.Title>
+            <UIText.Body>{questOutcome.numFail}</UIText.Body>
+          </Cells.Item>
+        </Cells.Root>
         <SherlockResult {...this.props} questOutcome={questOutcome} />
-        <View style={styles.okayButton}>
-          <Button onPress={() => this.props.onDismiss()}>Okay</Button>
-        </View>
-      </View>
+        <Button.Wrapper style={styles.Button}>
+          <Button onPress={() => this.props.onDismiss()}>OKAY</Button>
+        </Button.Wrapper>
+      </Screen>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
   },
   label: {
-    fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+    marginBottom: 20,
+    marginTop: 20,
   },
-  row: {
-    flexDirection: 'row',
+  nominees: {
+    marginHorizontal: 30,
   },
-  rowLabel: {
-    flex: 1,
+  SuccessText: {
+    color: Colors.Success,
   },
-  okayButton: {
-    alignItems: 'center',
+  FailText: {
+    color: Colors.Fail,
+  },
+  Button: {
+    marginTop: 20,
   },
 });
