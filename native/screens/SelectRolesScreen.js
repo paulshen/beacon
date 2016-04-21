@@ -6,7 +6,7 @@ import React, {
 } from 'react-native';
 
 import { withGameState } from '../GameState';
-import { Button, UIText } from '../ui/Elements';
+import { Button, List, Screen, UIText } from '../ui/Elements';
 
 class SelectRolesScreen extends React.Component {
   state = {
@@ -42,35 +42,34 @@ class SelectRolesScreen extends React.Component {
           this.state.selectedRolesByTeam[team].indexOf(role) !== -1
         );
         return (
-          <View style={styles.row} key={role}>
-            <Text style={styles.rowName}>{role}</Text>
+          <List.Item style={styles.row} key={role}>
+            <UIText.Body style={styles.rowName}>{role}</UIText.Body>
             <TouchableOpacity onPress={() => this._toggleRole(role, team, selectableRolesByTeam[team].maxCount)}>
-              <Text style={styles.rowName}>
+              <UIText.Body style={styles.rowName}>
                 {isRoleSelected ? 'Unselect' : 'Select'}
-              </Text>
+              </UIText.Body>
             </TouchableOpacity>
-          </View>
+          </List.Item>
         );
       });
 
       return (
-        <View key={team}>
-          <Text>{team} Team (select up to {selectableRolesByTeam[team].maxCount})</Text>
-          {roleRows}
+        <View key={team} style={styles.TeamSection}>
+          <UIText.Title style={styles.Title}>{`${team} Team (up to ${selectableRolesByTeam[team].maxCount})`.toUpperCase()}</UIText.Title>
+          <List.Root>
+            {roleRows}
+          </List.Root>
         </View>
       );
     });
 
     return (
-      <View style={styles.container}>
-        <UIText.Title style={styles.label}>
-          Select Roles
-        </UIText.Title>
+      <Screen style={styles.container}>
         {teamSections}
-        <View style={styles.buttonWrapper}>
-          <Button onPress={() => this.props.avalon.assignRoles(this.state.selectedRolesByTeam)}>Done</Button>
-        </View>
-      </View>
+        <Button.Wrapper style={styles.buttonWrapper}>
+          <Button onPress={() => this.props.avalon.assignRoles(this.state.selectedRolesByTeam)}>SELECT ROLES</Button>
+        </Button.Wrapper>
+      </Screen>
     );
   }
 }
@@ -80,8 +79,6 @@ export default SelectRolesScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
     paddingHorizontal: 20,
   },
   label: {
@@ -89,12 +86,16 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   buttonWrapper: {
-    alignItems: 'center',
-    marginTop: 50,
+    marginTop: 20,
+  },
+  TeamSection: {
+    marginBottom: 20,
+  },
+  Title: {
+    textAlign: 'center',
   },
   row: {
     flexDirection: 'row',
-    paddingHorizontal: 10,
     paddingVertical: 5,
   },
   rowName: {
