@@ -177,8 +177,10 @@ class MainScreen extends React.Component {
           {this.props.gameState.getPlayerName()}
         </Button.Small>
         <ScrollView style={styles.ScrollView}>
-          {this._renderQuestInfo(avalonState)}
-          <ActionPanel gameState={this.props.gameState} avalon={this.props.avalon} avalonState={avalonState} />
+          <View style={styles.ScrollViewContents}>
+            {this._renderQuestInfo(avalonState)}
+            <ActionPanel gameState={this.props.gameState} avalon={this.props.avalon} avalonState={avalonState} />
+          </View>
         </ScrollView>
       </Screen>
     );
@@ -200,7 +202,6 @@ const styles = StyleSheet.create({
   },
   questInfoContainer: {
     justifyContent: 'center',
-    paddingTop: 30,
   },
   kilgraveInfo: {
     alignItems: 'center',
@@ -217,6 +218,10 @@ const styles = StyleSheet.create({
   },
   ScrollView: {
     flex: 1,
+    paddingBottom: 30,
+  },
+  ScrollViewContents: {
+    paddingTop: 30,
     paddingBottom: 30,
   },
 });
