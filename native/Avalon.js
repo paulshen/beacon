@@ -81,12 +81,12 @@ const PlayerCountToTeamSizes = {
 };
 
 const PlayerCountToQuestSizes = {
-  5: [2, 3, 2, 3, 3],
-  6: [2, 3, 4, 3, 4],
-  7: [2, 3, 3, 4, 4],
-  8: [3, 4, 4, 5, 5],
-  9: [3, 4, 4, 5, 5],
-  10: [3, 4, 4, 5, 5],
+  5: [[2, 1], [3, 1], [2, 1], [3, 1], [3, 1]],
+  6: [[2, 1], [3, 1], [4, 1], [3, 1], [4, 1]],
+  7: [[2, 1], [3, 1], [3, 1], [4, 2], [4, 1]],
+  8: [[3, 1], [4, 1], [4, 1], [5, 2], [5, 1]],
+  9: [[3, 1], [4, 1], [4, 1], [5, 2], [5, 1]],
+  10: [[3, 1], [4, 1], [4, 1], [5, 2], [5, 1]],
 };
 
 function shuffle(a) {
@@ -194,7 +194,7 @@ export default class Avalon {
   _isQuestFinished(quest, questIndex) {
     let actionsFinished = (
       quest.actions &&
-      Object.keys(quest.actions).length === this.getQuestSizes()[questIndex]
+      Object.keys(quest.actions).length === this.getQuestSizes()[questIndex].numParticipants
     );
     let kilgraveFinished = !this.isRoleInGame(Role.Kilgrave) || this.hasKilgraveChosen(questIndex + 1);
     if (actionsFinished && kilgraveFinished) {
@@ -358,7 +358,13 @@ export default class Avalon {
   }
 
   getQuestSizes() {
-    return PlayerCountToQuestSizes[Object.keys(this.gameState.model.players).length];
+    let rawSizes = PlayerCountToQuestSizes[Object.keys(this.gameState.model.players).length];
+    return rawSizes.map((rawSize) => {
+      return {
+        numParticipants: rawSize[0],
+        numFailsRequired: rawSize[1],
+      };
+    });
   }
 
   getQuestOutcome(questIndex) {
@@ -373,7 +379,7 @@ export default class Avalon {
       nominees: quest.nominations[quest.nominations.length - 1].nominees,
       numSuccess: Object.keys(quest.actions).filter((key) => quest.actions[key]).length,
       numFail: numFail,
-      verdict: numFail === 0,
+      verdict: numFail < this.getQuestSizes()[questIndex].numFailsRequired,
       sherlockInspected: quest.sherlockInspected,
       sherlockInspectedAction: quest.actions[quest.sherlockInspected],
     }
@@ -422,7 +428,7 @@ export default class Avalon {
     let questIndex = currentQuest.index;
     let currentNomination = this._getCurrentNomination();
     let nominationIndex = currentNomination.index;
-    if (currentNomination.nominees.length < this.getQuestSizes()[questIndex]) {
+    if (currentNomination.nominees.length < this.getQuestSizes()[questIndex].numParticipants) {
       return {
         stage: Stage.Nominating,
         leaderKey: this._getLeaderKey(questIndex, nominationIndex),

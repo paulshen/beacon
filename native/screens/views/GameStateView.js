@@ -29,7 +29,11 @@ export default class GameStateView extends React.Component {
 
 class QuestView extends React.Component {
   render() {
-    let content = <UIText.Body>{this.props.questSize}</UIText.Body>;
+    let content =
+      <UIText.Body>
+        {this.props.questSize.numParticipants}
+        {this.props.questSize.numFailsRequired > 1 ? `/${this.props.questSize.numFailsRequired}` : null}
+      </UIText.Body>;
     let outcome = this.props.avalon.getQuestOutcome(this.props.questIndex);
 
     if (outcome) {
