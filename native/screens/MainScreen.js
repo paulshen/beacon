@@ -26,7 +26,11 @@ function _getIdForModal(modalType, questIndex, nominationIndex) {
 }
 function _getModalDataFromId(modalId) {
   let [modalType, questIndex, nominationIndex] = modalId.split('/');
-  return { modalType, questIndex, nominationIndex };
+  return {
+    modalType,
+    questIndex: parseInt(questIndex, 10),
+    nominationIndex: parseInt(nominationIndex, 10),
+  };
 }
 
 class Timer extends React.Component {
@@ -107,7 +111,6 @@ class MainScreen extends React.Component {
     }
     return (
       <View style={styles.questInfoContainer}>
-        <KilgraveInfo gameState={this.props.gameState} avalon={this.props.avalon} avalonState={avalonState} />
         <Cells.Root>
           <Cells.Item>
             <UIText.Title>LEADER</UIText.Title>
@@ -123,6 +126,12 @@ class MainScreen extends React.Component {
           </Cells.Item>
           {timestamp}
         </Cells.Root>
+        <KilgraveInfo
+          gameState={this.props.gameState}
+          avalon={this.props.avalon}
+          avalonState={avalonState}
+          style={styles.kilgraveInfo}
+        />
       </View>
     );
   }
@@ -192,6 +201,10 @@ const styles = StyleSheet.create({
   questInfoContainer: {
     justifyContent: 'center',
     paddingTop: 30,
+  },
+  kilgraveInfo: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
   label: {
     textAlign: 'center',

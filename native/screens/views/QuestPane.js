@@ -6,7 +6,7 @@ import React, {
 
 import { Button, List, UIText } from '../../ui/Elements.js';
 import { isSherlockInspecting, SherlockInspect } from './role_specific/SherlockViews.js';
-import { isKilgraveChoosing, KilgraveChoose } from './role_specific/KilgraveViews.js';
+import { isKilgraveChoosing, KilgraveChoose, KilgraveControlled } from './role_specific/KilgraveViews.js';
 
 export default class QuestPane extends React.Component {
   render() {
@@ -70,9 +70,11 @@ class ActionButtons extends React.Component {
 
     if (avalon.getKilgraveTarget(avalonState.questIndex) === gameState.getPlayerKey()) {
       return (
-        <View style={styles.container}>
-          <Text>You are being mind controlled by Kilgrave</Text>
-          {failButton}
+        <View>
+          <KilgraveControlled style={styles.kilgraveControlled} />
+          <View style={styles.buttonsContainer}>
+            {failButton}
+          </View>
         </View>
       );
     } else if (avalon.isGood(gameState.getPlayerKey())) {
@@ -104,6 +106,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  kilgraveControlled: {
+    marginBottom: 20,
   },
   BottomView: {
     marginTop: 20,

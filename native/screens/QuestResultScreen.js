@@ -36,7 +36,7 @@ export default class QuestResultScreen extends React.Component {
         </Cells.Root>
         <UIText.Title style={styles.label}>PARTICIPANTS</UIText.Title>
         <List.Root style={styles.nominees}>{nominees}</List.Root>
-        <SherlockResult {...this.props} questOutcome={questOutcome} />
+        <SherlockResult {...this.props} questOutcome={questOutcome} style={styles.sherlockResult} />
         <Button.Wrapper style={styles.Button}>
           <Button onPress={() => this.props.onDismiss()}>OKAY</Button>
         </Button.Wrapper>
@@ -56,6 +56,11 @@ const styles = StyleSheet.create({
   },
   nominees: {
     marginHorizontal: 30,
+  },
+  sherlockResult: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 10,
   },
   SuccessText: {
     color: Colors.Success,

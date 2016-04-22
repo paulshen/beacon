@@ -6,6 +6,8 @@ import React, {
 } from 'react-native';
 
 import { Role } from '../../../Avalon.js';
+import { List, UIText } from '../../../ui/Elements.js';
+import Colors from '../../../ui/Colors.js';
 
 export function isSherlockInspecting(gameState, avalon, avalonState) {
   let playerKey = gameState.getPlayerKey();
@@ -21,18 +23,20 @@ export class SherlockInspect extends React.Component {
     let { gameState, avalon, avalonState } = this.props;
     let nomineeRows = avalonState.nominees.map((nomineeKey) => {
       return (
-        <View key={nomineeKey}>
+        <List.Item key={nomineeKey}>
           <TouchableOpacity onPress={() => avalon.sherlockInspect(avalonState.questIndex, nomineeKey)}>
-            <Text>{gameState.getNameForPlayerKey(nomineeKey)}</Text>
+            <UIText.Body style={styles.nomineeText}>
+              {gameState.getNameForPlayerKey(nomineeKey)}
+            </UIText.Body>
           </TouchableOpacity>
-        </View>
+        </List.Item>
       );
     });
 
     return (
       <View>
-        <Text>Inspect a player's action:</Text>
-        {nomineeRows}
+        <UIText.Title style={styles.label}>CHOOSE SOMEONE TO INSPECT</UIText.Title>
+        <List.Root style={styles.nominees}>{nomineeRows}</List.Root>
       </View>
     );
   }
@@ -49,11 +53,34 @@ export class SherlockResult extends React.Component {
     let inspectedPlayerName = gameState.getNameForPlayerKey(questOutcome.sherlockInspected);
     let inspectedPlayerAction = questOutcome.sherlockInspectedAction ? "Success" : "Fail";
     return (
-      <View>
-        <Text>
-          {inspectedPlayerName}'s action was {inspectedPlayerAction}
-        </Text>
+      <View style={this.props.style}>
+        <UIText.Body style={styles.infoText}>
+          You inspected {inspectedPlayerName}'s action: {inspectedPlayerAction}
+        </UIText.Body>
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  label: {
+    textAlign: 'center',
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  nominees: {
+    marginHorizontal: 50,
+  },
+  nomineeText: {
+    textAlign: 'center',
+    marginBottom: 3,
+    marginTop: 3,
+  },
+  infoText: {
+    borderWidth: 1,
+    borderColor: Colors.Info,
+    color: Colors.Info,
+    padding: 10,
+    textAlign: 'center',
+  },
+});
