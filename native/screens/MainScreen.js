@@ -100,6 +100,13 @@ class MainScreen extends React.Component {
     }
   }
 
+  _getIdForLastVoteModal() {
+    let avalonState = this.props.avalon.getState();
+    let { stage, questIndex, nominationIndex } = avalonState;
+    nominationIndex = (stage === Stage.Questing) ? nominationIndex : nominationIndex - 1;
+    return _getIdForModal(Modals.VotingResult, questIndex, nominationIndex);
+  }
+
   _renderQuestInfo(avalonState) {
     let timestamp;
     if (avalonState.stage === Stage.Nominating) {
@@ -163,6 +170,13 @@ class MainScreen extends React.Component {
       }
     }
 
+    let lastVoteButton =
+      <Button.Small
+        onPress={() => this.setState({modalIdToShow: this._getIdForLastVoteModal()})}
+        style={styles.lastVoteButton}>
+        Last Vote
+      </Button.Small>;
+
     return (
       <Screen style={styles.container}>
         <GameStateView
@@ -176,6 +190,7 @@ class MainScreen extends React.Component {
           style={styles.roleButton}>
           {this.props.gameState.getPlayerName()}
         </Button.Small>
+        {(avalonState.stage !== Stage.Questing && avalonState.nominationIndex === 0) ? null : lastVoteButton}
         <ScrollView style={styles.ScrollView}>
           <View style={styles.ScrollViewContents}>
             {this._renderQuestInfo(avalonState)}
@@ -213,6 +228,11 @@ const styles = StyleSheet.create({
   },
   roleButton: {
     left: 20,
+    position: 'absolute',
+    top: 30,
+  },
+  lastVoteButton: {
+    right: 20,
     position: 'absolute',
     top: 30,
   },
