@@ -7,6 +7,7 @@ import React, {
 
 import { Role } from '../Avalon.js';
 import { Button, List, Screen, UIText } from '../ui/Elements.js';
+import Colors from '../ui/Colors';
 
 class RoleKnowledgeDisplay extends React.Component {
   _getKnownRolesDescription(role, avalon) {
@@ -71,15 +72,16 @@ class RoleKnowledgeDisplay extends React.Component {
 export default class RoleScreen extends React.Component {
   render() {
     let { gameState, avalon } = this.props;
-    let playerRole = avalon.getRoleForPlayerKey(gameState.getPlayerKey());
+    let playerKey = gameState.getPlayerKey();
+    let playerRole = avalon.getRoleForPlayerKey(playerKey);
     return (
       <Screen style={styles.container}>
-        <UIText.Body style={styles.label}>
-          {gameState.getPlayerName()}
-        </UIText.Body>
-        <UIText.Body style={styles.label}>
-          You are {playerRole}
-        </UIText.Body>
+        <UIText.Title style={styles.label}>
+          {'YOUR ROLE: '}
+          <Text style={avalon.isGood(playerKey) ? styles.GoodText : styles.EvilText}>
+            {playerRole.toUpperCase()}
+          </Text>
+        </UIText.Title>
         <RoleKnowledgeDisplay gameState={gameState} avalon={avalon} />
         <Button.Wrapper style={styles.Button}>
           <Button onPress={() => this.props.onDismiss()}>OKAY</Button>
@@ -106,5 +108,11 @@ const styles = StyleSheet.create({
   },
   Button: {
     marginTop: 50,
+  },
+  GoodText: {
+    color: Colors.Success,
+  },
+  EvilText: {
+    color: Colors.Fail,
   },
 });

@@ -24,14 +24,12 @@ export default class VotingResultScreen extends React.Component {
     ));
     return (
       <Screen style={styles.container}>
-        <UIText.Title style={styles.label}>NOMINEES</UIText.Title>
-        <List.Root>{nominees}</List.Root>
-        <UIText.Title style={styles.verdict}>
-          {'VERDICT: '}
-          <Text style={avalon.isNominationPass(nomination) ? styles.SuccessText : styles.FailText}>
-            {avalon.isNominationPass(nomination) ? 'PASS' : 'FAIL'}
-          </Text>
+        <UIText.Title style={[styles.verdict, avalon.isNominationPass(nomination) ? styles.SuccessText : styles.FailText]}>
+          {'NOMINATION '}
+          {avalon.isNominationPass(nomination) ? 'APPROVED' : 'REJECTED'}
         </UIText.Title>
+        <List.Root>{nominees}</List.Root>
+        <UIText.Title style={styles.label}>VOTES</UIText.Title>
         <List.Root>{votes}</List.Root>
         <Button.Wrapper style={styles.okayButton}>
           <Button onPress={() => this.props.onDismiss()}>OKAY</Button>
@@ -57,7 +55,6 @@ const styles = StyleSheet.create({
   },
   verdict: {
     marginBottom: 10,
-    marginTop: 20,
     textAlign: 'center',
   },
   SuccessText: {

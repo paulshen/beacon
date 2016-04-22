@@ -20,17 +20,13 @@ export default class QuestResultScreen extends React.Component {
     ));
     return (
       <Screen style={styles.container}>
-        <UIText.Title style={styles.label}>NOMINEES</UIText.Title>
-        <List.Root style={styles.nominees}>{nominees}</List.Root>
-        <UIText.Title style={styles.label}>
-          {'OUTCOME: '}
-          <Text style={questOutcome.verdict ? styles.SuccessText : styles.FailText}>
-            {questOutcome.verdict ? 'SUCCEED' : 'FAIL'}
-          </Text>
+        <UIText.Title style={[styles.label, questOutcome.verdict ? styles.SuccessText : styles.FailText]}>
+            {'QUEST '}
+            {questOutcome.verdict ? 'SUCCEEDED' : 'FAILED'}
         </UIText.Title>
         <Cells.Root>
           <Cells.Item>
-            <UIText.Title>SUCCEED</UIText.Title>
+            <UIText.Title>SUCCESS</UIText.Title>
             <UIText.Body>{questOutcome.numSuccess}</UIText.Body>
           </Cells.Item>
           <Cells.Item>
@@ -38,6 +34,8 @@ export default class QuestResultScreen extends React.Component {
             <UIText.Body>{questOutcome.numFail}</UIText.Body>
           </Cells.Item>
         </Cells.Root>
+        <UIText.Title style={styles.label}>PARTICIPANTS</UIText.Title>
+        <List.Root style={styles.nominees}>{nominees}</List.Root>
         <SherlockResult {...this.props} questOutcome={questOutcome} />
         <Button.Wrapper style={styles.Button}>
           <Button onPress={() => this.props.onDismiss()}>OKAY</Button>
@@ -53,8 +51,8 @@ const styles = StyleSheet.create({
   },
   label: {
     textAlign: 'center',
-    marginBottom: 20,
-    marginTop: 20,
+    marginBottom: 10,
+    marginTop: 10,
   },
   nominees: {
     marginHorizontal: 30,

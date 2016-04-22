@@ -28,7 +28,7 @@ export default class NominatePane extends React.Component {
 
   _didSelectCorrectNumber = () => {
     let questSize = this.props.avalon.getQuestSizes()[this.props.avalonState.questIndex];
-    return this.state.nomineeKeys.length === questSize;
+    return this.state.nomineeKeys.length === questSize.numParticipants;
   };
 
   _onNominate = () => {

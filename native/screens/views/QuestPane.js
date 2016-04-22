@@ -65,7 +65,7 @@ class ActionButtons extends React.Component {
       </Button>;
     let successButton =
       <Button style={styles.QuestButton} onPress={() => avalon.questAction(avalonState.questIndex, true)}>
-        SUCCEED
+        SUCCESS
       </Button>;
 
     if (avalon.getKilgraveTarget(avalonState.questIndex) === gameState.getPlayerKey()) {

@@ -27,7 +27,7 @@ export default class JoinScreen extends React.Component {
           value={this.state.gameId}
           autoCorrect={false}
         />
-        <UIText.Title style={styles.label}>NAME</UIText.Title>
+        <UIText.Title style={styles.label}>YOUR NAME</UIText.Title>
         <UIText.Input
           style={styles.input}
           onChangeText={(name) => this.setState({name})}

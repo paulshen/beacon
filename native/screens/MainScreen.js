@@ -107,9 +107,6 @@ class MainScreen extends React.Component {
     }
     return (
       <View style={styles.questInfoContainer}>
-        <UIText.Title style={styles.label}>
-          CURRENT QUEST
-        </UIText.Title>
         <KilgraveInfo gameState={this.props.gameState} avalon={this.props.avalon} avalonState={avalonState} />
         <Cells.Root>
           <Cells.Item>
@@ -119,7 +116,7 @@ class MainScreen extends React.Component {
             </UIText.Body>
           </Cells.Item>
           <Cells.Item>
-            <UIText.Title>VOTE</UIText.Title>
+            <UIText.Title>NOMINATION</UIText.Title>
             <UIText.Body>
               {avalonState.nominationIndex + 1} of 5
             </UIText.Body>
