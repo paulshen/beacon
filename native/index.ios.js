@@ -34,6 +34,5 @@ class Beacon extends Component {
 }
 
 Beacon = withGameState(Beacon);
-export default Beacon;
 
 AppRegistry.registerComponent('beacon', () => Beacon);
