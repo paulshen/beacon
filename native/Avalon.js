@@ -473,6 +473,7 @@ export default class Avalon {
         nominationIndex: nominationIndex,
         nominees: currentNomination.nominees,
         votes: currentNomination.votes,
+        startTime: this._getNominationStageStartTime(),
       };
     } else if (this.isNominationPass(currentNomination)) {
       return {

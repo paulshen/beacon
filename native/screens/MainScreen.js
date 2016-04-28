@@ -113,7 +113,6 @@ class MainScreen extends React.Component {
 
   _renderQuestInfo(avalonState) {
     if (avalonState.stage === Stage.GameOver) {
-      // TODO: make this look nice
       return (
         <View style={styles.gameOverContainer}>
           <UIText.Title style={avalonState.winningTeam === Team.Good ? styles.GoodText : styles.EvilText}>
@@ -124,7 +123,7 @@ class MainScreen extends React.Component {
     }
 
     let timestamp;
-    if (avalonState.stage === Stage.Nominating) {
+    if (avalonState.stage === Stage.Nominating || avalonState.stage === Stage.Voting) {
       timestamp =
         <Cells.Item>
           <UIText.Title>TIME</UIText.Title>

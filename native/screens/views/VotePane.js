@@ -15,6 +15,28 @@ export default class VotePane extends React.Component {
     );
   };
 
+  _getWaitingText(gameState, votes) {
+    let numPlayers = gameState.getNumPlayers();
+    let numRemainingVotes = numPlayers - Object.keys(votes).length;
+    if (numRemainingVotes > 2) {
+      return `Waiting for ${numRemainingVotes} others to vote...`;
+    }
+
+    let players = gameState.getPlayers();
+    let remainingPlayerNames = [];
+    for (let key in players) {
+      if (!(key in votes)) {
+        remainingPlayerNames.push(players[key]);
+      }
+    }
+
+    if (numRemainingVotes === 2) {
+      return `Waiting for ${remainingPlayerNames[0]} and ${remainingPlayerNames[1]} to vote...`;
+    } else {
+      return `Waiting for ${remainingPlayerNames[0]} to vote...`;
+    }
+  };
+
   render() {
     // if the player already voted, show the waiting state. otherwise show the buttons
     let bottomView;
@@ -22,7 +44,7 @@ export default class VotePane extends React.Component {
       bottomView =
         <View style={styles.container}>
           <UIText.Body style={styles.WaitingText}>
-            Waiting for others to vote...
+            {this._getWaitingText(this.props.gameState, this.props.avalonState.votes)}
           </UIText.Body>
         </View>;
     } else {
