@@ -2,6 +2,7 @@ export const Stage = {
   Nominating: 1,
   Voting: 2,
   Questing: 3,
+  GameOver: 4,
 };
 
 export const Team = {
@@ -423,12 +424,39 @@ export default class Avalon {
     }
   }
 
+  _getWinningTeam(currentQuestIndex) {
+    let questSizes = this.getQuestSizes();
+    let questVerdicts = {
+      true: 0,
+      false: 0,
+    };
+    for (let i = 0; i < currentQuestIndex; i++) {
+      let quest = this._getQuestByIndex(i);
+      let numFail = Object.keys(quest.actions).filter((key) => !quest.actions[key]).length;
+      let verdict = numFail < questSizes[i].numFailsRequired;
+      questVerdicts[verdict]++;
+      if (questVerdicts[verdict] > questSizes.length / 2) {
+        return verdict ? Team.Good : Team.Evil;
+      }
+    }
+
+    return null;
+  }
+
   getState() {
     let currentQuest = this._getCurrentQuest();
     let questIndex = currentQuest.index;
     let currentNomination = this._getCurrentNomination();
     let nominationIndex = currentNomination.index;
-    if (currentNomination.nominees.length < this.getQuestSizes()[questIndex].numParticipants) {
+    let winningTeam = this._getWinningTeam(questIndex);
+    if (winningTeam) {
+      return {
+        stage: Stage.GameOver,
+        questIndex: questIndex,
+        nominationIndex: nominationIndex,
+        winningTeam: winningTeam,
+      };
+    } else if (currentNomination.nominees.length < this.getQuestSizes()[questIndex].numParticipants) {
       return {
         stage: Stage.Nominating,
         leaderKey: this._getLeaderKey(questIndex, nominationIndex),

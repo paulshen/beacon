@@ -7,7 +7,7 @@ import React, {
 } from 'react-native';
 
 import { withGameState } from '../GameState';
-import { Stage } from '../Avalon';
+import { Stage, Team } from '../Avalon';
 import GameStateView from './views/GameStateView';
 import ActionPanel from './views/ActionPanel';
 import RoleScreen from './RoleScreen';
@@ -15,6 +15,7 @@ import QuestResultScreen from './QuestResultScreen';
 import VotingResultScreen from './VotingResultScreen';
 import { KilgraveInfo } from './views/role_specific/KilgraveViews'
 import { Button, Cells, Screen, UIText } from '../ui/Elements';
+import Colors from '../ui/Colors';
 
 const Modals = {
   VotingResult: '1',
@@ -91,6 +92,9 @@ class MainScreen extends React.Component {
         modalId = _getIdForModal(Modals.Role, null, null);
       }
       break;
+    case Stage.GameOver:
+      modalId = _getIdForModal(Modals.QuestResult, questIndex - 1, null);
+      break;
     }
     if (this.state.modalsSeen.indexOf(modalId) === -1) {
       this.setState({
@@ -108,6 +112,17 @@ class MainScreen extends React.Component {
   }
 
   _renderQuestInfo(avalonState) {
+    if (avalonState.stage === Stage.GameOver) {
+      // TODO: make this look nice
+      return (
+        <View style={styles.gameOverContainer}>
+          <UIText.Title style={avalonState.winningTeam === Team.Good ? styles.GoodText : styles.EvilText}>
+            {avalonState.winningTeam.toUpperCase()} TEAM WINS!
+          </UIText.Title>
+        </View>
+      );
+    }
+
     let timestamp;
     if (avalonState.stage === Stage.Nominating) {
       timestamp =
@@ -180,9 +195,7 @@ class MainScreen extends React.Component {
     return (
       <Screen style={styles.container}>
         <GameStateView
-          gameState={this.props.gameState}
           avalon={this.props.avalon}
-          avalonState={avalonState}
           showQuestResultModal={(questIndex) => this.setState({modalIdToShow: _getIdForModal(Modals.QuestResult, questIndex)})}
         />
         <Button.Small
@@ -218,6 +231,9 @@ const styles = StyleSheet.create({
   questInfoContainer: {
     justifyContent: 'center',
   },
+  gameOverContainer: {
+    alignItems: 'center',
+  },
   kilgraveInfo: {
     alignItems: 'center',
     marginBottom: 20,
@@ -243,5 +259,11 @@ const styles = StyleSheet.create({
   ScrollViewContents: {
     paddingTop: 30,
     paddingBottom: 30,
+  },
+  GoodText: {
+    color: Colors.Success,
+  },
+  EvilText: {
+    color: Colors.Fail,
   },
 });

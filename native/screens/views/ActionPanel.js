@@ -14,6 +14,8 @@ export default class ActionPanel extends React.Component {
       return <VotePane {...this.props} />;
     case Stage.Questing:
       return <QuestPane {...this.props} />;
+    case Stage.GameOver:
+      return null;
     }
   }
 }
