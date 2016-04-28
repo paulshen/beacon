@@ -34,6 +34,9 @@ function _getModalDataFromId(modalId) {
   };
 }
 
+const MediumTimerCheckpointSeconds = 180;
+const HighTimerCheckpointSeconds = 240;
+
 class Timer extends React.Component {
   componentDidMount() {
     this._interval = window.setInterval(this._onTick, 1000);
@@ -53,8 +56,14 @@ class Timer extends React.Component {
     while (secondsString.length < 2) {
       secondsString = `0${secondsString}`;
     }
+    let textStyle = null;
+    if (secondsElapsed >= HighTimerCheckpointSeconds) {
+      textStyle = styles.HighTimerText;
+    } else if (secondsElapsed >= MediumTimerCheckpointSeconds) {
+      textStyle = styles.MediumTimerText;
+    }
     return (
-      <UIText.Body>
+      <UIText.Body style={textStyle}>
         {Math.floor(secondsElapsed / 60)}:{secondsString}
       </UIText.Body>
     );
@@ -263,6 +272,12 @@ const styles = StyleSheet.create({
     color: Colors.Success,
   },
   EvilText: {
+    color: Colors.Fail,
+  },
+  MediumTimerText: {
+    color: Colors.Info,
+  },
+  HighTimerText: {
     color: Colors.Fail,
   },
 });
