@@ -1,4 +1,5 @@
 import React, {
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -23,17 +24,21 @@ export default class VotingResultScreen extends React.Component {
       </List.Item>
     ));
     return (
-      <Screen style={styles.container}>
-        <UIText.Title style={[styles.verdict, avalon.isNominationPass(nomination) ? styles.SuccessText : styles.FailText]}>
-          {'NOMINATION '}
-          {avalon.isNominationPass(nomination) ? 'APPROVED' : 'REJECTED'}
-        </UIText.Title>
-        <List.Root>{nominees}</List.Root>
-        <UIText.Title style={styles.label}>VOTES</UIText.Title>
-        <List.Root>{votes}</List.Root>
-        <Button.Wrapper style={styles.okayButton}>
-          <Button onPress={() => this.props.onDismiss()}>OKAY</Button>
-        </Button.Wrapper>
+      <Screen>
+        <ScrollView>
+          <View style={styles.container}>
+            <UIText.Title style={[styles.verdict, avalon.isNominationPass(nomination) ? styles.SuccessText : styles.FailText]}>
+              {'NOMINATION '}
+              {avalon.isNominationPass(nomination) ? 'APPROVED' : 'REJECTED'}
+            </UIText.Title>
+            <List.Root>{nominees}</List.Root>
+            <UIText.Title style={styles.label}>VOTES</UIText.Title>
+            <List.Root>{votes}</List.Root>
+            <Button.Wrapper style={styles.okayButton}>
+              <Button onPress={() => this.props.onDismiss()}>OKAY</Button>
+            </Button.Wrapper>
+          </View>
+        </ScrollView>
       </Screen>
     );
   }
@@ -42,6 +47,7 @@ export default class VotingResultScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
+    paddingVertical: 50,
   },
   label: {
     textAlign: 'center',
