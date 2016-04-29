@@ -9,6 +9,15 @@ import { isSherlockInspecting, SherlockInspect } from './role_specific/SherlockV
 import { isKilgraveChoosing, KilgraveChoose, KilgraveControlled } from './role_specific/KilgraveViews.js';
 
 export default class QuestPane extends React.Component {
+  componentWillMount() {
+    this._showContinueButton = true;
+  }
+
+  _onContinueButtonPressed() {
+    this._showContinueButton = false;
+    this.forceUpdate();
+  }
+
   render() {
     let { gameState, avalon, avalonState } = this.props;
 
@@ -19,10 +28,20 @@ export default class QuestPane extends React.Component {
     let bottomView;
     if (isTakingAction) {
       bottomView = <ActionButtons {...this.props} />;
+      this._showContinueButton = false;
     } else if (isSherlockInspecting(gameState, avalon, avalonState)) {
       bottomView = <SherlockInspect {...this.props} />;
+      this._showContinueButton = false;
     } else if (isKilgraveChoosing(gameState, avalon, avalonState)) {
       bottomView = <KilgraveChoose {...this.props} />;
+      this._showContinueButton = false;
+    } else if (this._showContinueButton) {
+      bottomView =
+        <View style={styles.buttonsContainer}>
+          <Button style={styles.QuestButton} onPress={() => this._onContinueButtonPressed()}>
+            CONTINUE
+          </Button>
+        </View>;
     } else {
       bottomView =
         <View style={styles.container}>
