@@ -17,6 +17,19 @@ export function isKilgraveChoosing(gameState, avalon, avalonState) {
 }
 
 export class KilgraveChoose extends React.Component {
+  _getButtonText(questIndex) {
+    switch (questIndex) {
+    case 0:
+      return "Save for quest 3 or 4";
+    case 1:
+      return "Save for quest 4";
+    case 2:
+      return "Don't use";
+    default:
+      throw new Error(`shouldn't show Kilgrave choice during quest ${questIndex}`);
+    }
+  }
+
   render() {
     let { gameState, avalon, avalonState } = this.props;
     let playerRows = Object.keys(gameState.getPlayers()).map((playerKey) => {
@@ -40,7 +53,7 @@ export class KilgraveChoose extends React.Component {
         </List.Root>
         <Button.Wrapper>
           <Button onPress={() => avalon.kilgraveMindControl(avalonState.questIndex + 1, null)}>
-            Save for later
+            {this._getButtonText(avalonState.questIndex)}
           </Button>
         </Button.Wrapper>
       </View>

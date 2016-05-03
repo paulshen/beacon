@@ -392,6 +392,11 @@ export default class Avalon {
   }
 
   hasKilgraveChosen(questIndex) {
+    // kilgrave isn't allowed to choose before the last quest
+    if (questIndex === 4) {
+      return true;
+    }
+
     let model = this._getAvalonModel();
     return model.lastKilgraveAction &&
            (model.lastKilgraveAction.questIndex >= questIndex ||
